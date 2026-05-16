@@ -2812,37 +2812,40 @@
 
     @media (max-width: 760px) {
       .experiences {
-        height: auto;
-        padding-top: 78px;
-        padding-bottom: 78px;
+        padding-top: 0;
+        padding-bottom: 0;
+        overflow: clip;
       }
 
       .experience-pin {
-        position: relative;
-        top: auto;
+        position: sticky;
+        top: 78px;
+        height: calc(100svh - 78px);
         min-height: 0;
-        padding: 0;
+        padding: 14px 0 16px;
+        justify-content: center;
       }
 
       .experience-viewport {
-        overflow-x: auto;
+        overflow: hidden;
         overscroll-behavior-inline: contain;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
+        margin-inline: -18px;
+        padding-inline: 18px;
       }
 
       .experience-viewport::after {
-        display: none;
+        display: block;
+        width: 32px;
       }
 
       .experience-track {
-        transform: none !important;
+        transform: translate3d(var(--experience-shift), 0, 0) !important;
         transition: none;
       }
 
       .experience {
         flex-basis: min(84vw, 380px);
-        scroll-snap-align: start;
+        height: clamp(350px, 52svh, 470px);
       }
     }
 
@@ -3637,28 +3640,29 @@
       }
 
       .topbar {
-        grid-template-columns: 1fr;
-        gap: 9px;
-        align-items: start;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
         justify-items: stretch;
         width: 100%;
         max-width: 100%;
         overflow: hidden;
-        padding: 10px 14px 12px;
+        padding: 9px 12px;
         min-height: 0;
       }
 
       .brand {
         width: 100%;
+        gap: 8px;
       }
 
       .brand-mark {
-        width: 32px;
-        height: 32px;
+        width: 30px;
+        height: 30px;
       }
 
       .brand strong {
-        font-size: 22px;
+        font-size: clamp(18px, 6vw, 22px);
       }
 
       .brand-line {
@@ -3694,7 +3698,10 @@
       }
 
       .top-actions {
-        flex-wrap: wrap;
+        width: auto;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+        overflow: visible;
       }
 
       .top-actions a[href^="mailto"] {
@@ -3702,9 +3709,11 @@
       }
 
       .top-actions .button {
-        width: 100%;
-        max-width: calc(100vw - 28px);
-        min-height: 38px;
+        width: auto;
+        max-width: none;
+        min-height: 36px;
+        padding: 0 12px;
+        font-size: 11px;
       }
 
       .hero,
@@ -3785,6 +3794,7 @@
 
       .lodging-selector {
         display: flex;
+        flex-wrap: wrap;
         gap: 8px;
         overflow-x: auto;
         padding: 8px;
@@ -3796,13 +3806,13 @@
       }
 
       .lodging-selector > strong {
-        flex: 0 0 auto;
+        flex: 0 0 100%;
         align-self: center;
-        padding: 0 8px;
+        padding: 4px 8px 2px;
       }
 
       .lodging-option {
-        flex: 0 0 min(270px, 76vw);
+        flex: 0 0 min(260px, 74vw);
       }
 
       .preview-media {
@@ -3811,6 +3821,15 @@
 
       .booking-box {
         padding: 18px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .booking-copy,
+      .contact-panel {
+        min-width: 0;
       }
 
       .booking-form .button {
@@ -3886,8 +3905,8 @@
       }
 
       .experience {
-        flex-basis: min(330px, 82vw);
-        min-height: 390px;
+        flex-basis: min(330px, 84vw);
+        min-height: 0;
       }
 
       .property-row {
@@ -3983,6 +4002,24 @@
 
       [id] {
         scroll-margin-top: 132px;
+      }
+
+      .brand-line {
+        display: none;
+      }
+
+      .top-actions .button {
+        padding: 0 10px;
+        font-size: 10.5px;
+      }
+
+      .split-header h2 {
+        font-size: clamp(34px, 11vw, 48px);
+      }
+
+      .split-header p {
+        font-size: 13px;
+        line-height: 1.4;
       }
 
     }
@@ -5154,20 +5191,17 @@
 
     function updateExperienceScroll() {
       if (!experiencesSection || !experiencePin || !experienceViewport || !experienceTrack) return;
-      if (window.matchMedia("(max-width: 760px)").matches) {
-        experiencesSection.style.removeProperty("--experience-scroll-height");
-        experienceTrack.style.setProperty("--experience-shift", "0px");
-        return;
-      }
 
       const maxShift = Math.max(0, experienceTrack.scrollWidth - experienceViewport.clientWidth);
       const pinHeight = experiencePin.offsetHeight || Math.max(window.innerHeight - 88, experiencePin.scrollHeight);
-      const scrollDistance = Math.max(window.innerHeight * 1.25, maxShift * 1.9);
+      const isCompact = window.matchMedia("(max-width: 760px)").matches;
+      const scrollDistance = Math.max(window.innerHeight * (isCompact ? 1.55 : 1.25), maxShift * (isCompact ? 2.25 : 1.9));
       const finalHold = Math.min(260, Math.max(150, window.innerHeight * .18));
       experiencesSection.style.setProperty("--experience-scroll-height", `${pinHeight + scrollDistance + finalHold}px`);
 
       const rect = experiencesSection.getBoundingClientRect();
-      const progress = clamp((88 - rect.top) / scrollDistance);
+      const stickyTop = isCompact ? 78 : 88;
+      const progress = clamp((stickyTop - rect.top) / scrollDistance);
       experienceTrack.style.setProperty("--experience-shift", `${-(maxShift * progress)}px`);
     }
 
