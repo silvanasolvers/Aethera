@@ -2820,10 +2820,10 @@
       .experience-pin {
         position: sticky;
         top: 78px;
-        height: calc(100svh - 78px);
+        height: auto;
         min-height: 0;
         padding: 10px 0 12px;
-        justify-content: center;
+        justify-content: flex-start;
       }
 
       .split-header {
@@ -2873,9 +2873,7 @@
       }
 
       .experience-scroll-note {
-        margin-top: 6px;
-        font-size: 9px;
-        letter-spacing: .12em;
+        display: none;
       }
     }
 
@@ -5341,10 +5339,10 @@
       const pinHeight = experiencePin.offsetHeight || Math.max(window.innerHeight - 88, experiencePin.scrollHeight);
       const isCompact = window.matchMedia("(max-width: 760px)").matches;
       const scrollDistance = isCompact
-        ? Math.max(window.innerHeight * .55, maxShift * .78)
+        ? Math.max(window.innerHeight * .34, maxShift * .5)
         : Math.max(window.innerHeight * 1.25, maxShift * 1.9);
       const finalHold = isCompact
-        ? Math.min(28, Math.max(10, window.innerHeight * .025))
+        ? 0
         : Math.min(260, Math.max(150, window.innerHeight * .18));
       experiencesSection.style.setProperty("--experience-scroll-height", `${pinHeight + scrollDistance + finalHold}px`);
 
