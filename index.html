@@ -3447,6 +3447,11 @@
       box-shadow: 0 20px 60px rgba(23, 22, 21, .12);
     }
 
+    .experience.reveal {
+      opacity: 1;
+      transform: none;
+    }
+
     .review-card {
       border-color: rgba(23, 22, 21, .12);
       background: rgba(255, 253, 248, .62);
@@ -5336,7 +5341,7 @@
       const pinHeight = experiencePin.offsetHeight || Math.max(window.innerHeight - 88, experiencePin.scrollHeight);
       const isCompact = window.matchMedia("(max-width: 760px)").matches;
       const scrollDistance = isCompact
-        ? Math.max(window.innerHeight * .72, maxShift * 1.05)
+        ? Math.max(window.innerHeight * .55, maxShift * .78)
         : Math.max(window.innerHeight * 1.25, maxShift * 1.9);
       const finalHold = isCompact
         ? Math.min(28, Math.max(10, window.innerHeight * .025))
