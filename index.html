@@ -1,0 +1,5260 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AETHERA - Cartografía del descanso</title>
+  <meta name="description" content="AETHERA: alojamientos privados en Colombia, entre el Caribe, Cauca Viejo y las montañas de Antioquia.">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #171615;
+      --night: #f5efe5;
+      --deep: #ebe5da;
+      --forest: #153f31;
+      --moss: #8ea66d;
+      --gold: #c9943e;
+      --clay: #c4744d;
+      --sea: #2f7f91;
+      --mist: rgba(23, 22, 21, .64);
+      --line: rgba(23, 22, 21, .12);
+      --glass: rgba(245, 239, 229, .78);
+      --paper: #f5efe5;
+      --paper-ink: #171615;
+      --radius: 8px;
+      --mx: 50vw;
+      --my: 50vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 96px;
+      background: var(--night);
+    }
+
+    [id] {
+      scroll-margin-top: 96px;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      overflow-x: hidden;
+      background:
+        radial-gradient(680px circle at var(--mx) var(--my), rgba(47, 127, 145, .12), transparent 42%),
+        linear-gradient(90deg, rgba(23, 22, 21, .055) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(23, 22, 21, .05) 1px, transparent 1px),
+        var(--paper);
+      background-size: auto, 40px 40px, 40px 40px, auto;
+      color: var(--ink);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+      background:
+        radial-gradient(220px circle at var(--mx) var(--my), rgba(47, 127, 145, .16), transparent 58%),
+        linear-gradient(90deg, rgba(23, 22, 21, .028) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(23, 22, 21, .024) 1px, transparent 1px);
+      background-size: auto, 74px 74px, 74px 74px;
+      mix-blend-mode: multiply;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      opacity: .08;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .loader {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(680px circle at 50% 38%, rgba(47, 127, 145, .12), transparent 48%),
+        linear-gradient(135deg, #fffdf8 0%, #f7f1e8 58%, #edf6f3 100%);
+      color: var(--ink);
+      transition: opacity .65s ease, visibility .65s ease;
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-core {
+      width: min(760px, calc(100vw - 40px));
+      text-align: center;
+    }
+
+    .loader-stage {
+      position: relative;
+      display: grid;
+      gap: 18px;
+      padding: clamp(24px, 5vw, 52px);
+      overflow: hidden;
+      border: 1px solid rgba(23, 22, 21, .1);
+      border-radius: 18px;
+      background:
+        linear-gradient(90deg, rgba(47, 127, 145, .035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(47, 127, 145, .03) 1px, transparent 1px),
+        rgba(255, 253, 248, .72);
+      background-size: 38px 38px;
+      box-shadow: 0 34px 90px rgba(23, 22, 21, .1);
+    }
+
+    .loader-stage::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border: 1px solid rgba(23, 22, 21, .08);
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    .loader-stage > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .loader-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      color: rgba(23, 22, 21, .72);
+      font-size: clamp(10px, 1.3vw, 12px);
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .loader-topline span:first-child {
+      color: var(--sea);
+    }
+
+    .loader-flight {
+      position: relative;
+      height: clamp(118px, 18vw, 168px);
+      margin: 10px 0 2px;
+    }
+
+    .loader-flight svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .loader-route-base {
+      fill: none;
+      stroke: rgba(23, 22, 21, .16);
+      stroke-width: 1.8;
+      stroke-dasharray: 9 13;
+    }
+
+    .loader-route-progress {
+      fill: none;
+      stroke: var(--sea);
+      stroke-width: 2.8;
+      stroke-linecap: round;
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      filter: drop-shadow(0 0 8px rgba(47, 127, 145, .24));
+      animation: loaderRoute 3.05s linear forwards;
+    }
+
+    .loader-plane {
+      position: absolute;
+      left: 5%;
+      top: 48%;
+      width: clamp(94px, 11vw, 124px);
+      height: clamp(66px, 7.8vw, 86px);
+      transform: translate3d(-50%, -50%, 0) rotate(-10deg);
+      transform-origin: 52% 48%;
+      animation: paperPlane 3.05s linear forwards;
+      filter: drop-shadow(0 18px 18px rgba(23, 22, 21, .22));
+      will-change: left, top, transform, opacity;
+    }
+
+    .loader-plane::before {
+      content: "";
+      position: absolute;
+      inset: 18% 6% 8% 5%;
+      background: rgba(23, 22, 21, .12);
+      filter: blur(10px);
+      transform: rotate(-8deg);
+      border-radius: 999px;
+      z-index: -1;
+    }
+
+    .loader-plane::after {
+      content: none;
+    }
+
+    .loader-plane svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .loader-plane .paper-body {
+      fill: #fffdf8;
+      stroke: var(--ink);
+      stroke-width: 4.4;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
+    .loader-plane .paper-fold {
+      fill: rgba(184, 221, 226, .72);
+      stroke: var(--ink);
+      stroke-width: 3.2;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
+    .loader-plane .paper-line {
+      fill: none;
+      stroke: rgba(47, 127, 145, .64);
+      stroke-width: 2.1;
+      stroke-linecap: round;
+    }
+
+    .loader-plane .paper-margin {
+      fill: none;
+      stroke: rgba(175, 73, 55, .72);
+      stroke-width: 2;
+      stroke-linecap: round;
+    }
+
+    .loader-message {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(26px, 3.8vw, 44px);
+      font-weight: 400;
+      line-height: 1.08;
+    }
+
+    .loader-message span {
+      color: var(--sea);
+      font-family: inherit;
+    }
+
+    .loader h1 {
+      max-width: 600px;
+      margin: 0 auto;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(32px, 4.8vw, 56px);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .loader-progress-wrap {
+      width: min(360px, 72vw);
+      display: grid;
+      gap: 8px;
+      justify-items: stretch;
+      margin: 10px auto 0;
+      color: rgba(23, 22, 21, .62);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    @keyframes loaderRoute {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes paperPlane {
+      0% {
+        left: 4%;
+        top: 59%;
+        transform: translate3d(-50%, -50%, 0) rotate(-10deg) scale(.92);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      20% {
+        left: 23%;
+        top: 39%;
+        transform: translate3d(-50%, -50%, 0) rotate(11deg) scale(1);
+        opacity: 1;
+      }
+      38% {
+        left: 39%;
+        top: 52%;
+        transform: translate3d(-50%, -50%, 0) rotate(2deg) scale(1.02);
+      }
+      56% {
+        left: 56%;
+        top: 42%;
+        transform: translate3d(-50%, -50%, 0) rotate(16deg) scale(1);
+      }
+      74% {
+        left: 73%;
+        top: 29%;
+        transform: translate3d(-50%, -50%, 0) rotate(7deg) scale(1);
+      }
+      88% {
+        left: 82%;
+        top: 25%;
+        transform: translate3d(-50%, -50%, 0) rotate(15deg) scale(1);
+      }
+      to {
+        left: 91%;
+        top: 27%;
+        transform: translate3d(-50%, -50%, 0) rotate(9deg) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .loader-bar {
+      height: 2px;
+      width: 100%;
+      overflow: hidden;
+      background: rgba(23, 22, 21, .12);
+    }
+
+    .loader-bar span {
+      display: block;
+      width: 100%;
+      height: 100%;
+      transform-origin: left;
+      animation: loadbar 3.05s linear forwards;
+      background: linear-gradient(90deg, var(--ink), var(--sea), var(--gold));
+    }
+
+    @keyframes loadbar {
+      from {
+        transform: scaleX(.05);
+      }
+      to {
+        transform: scaleX(1);
+      }
+    }
+
+    .cursor {
+      position: fixed;
+      z-index: 90;
+      width: 22px;
+      height: 22px;
+      margin: -11px 0 0 -11px;
+      border: 1px solid rgba(248, 242, 231, .72);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate3d(var(--mx), var(--my), 0);
+      transition: width .18s ease, height .18s ease, margin .18s ease, border-color .18s ease;
+      mix-blend-mode: difference;
+    }
+
+    .cursor.active {
+      width: 58px;
+      height: 58px;
+      margin: -29px 0 0 -29px;
+      border-color: rgba(215, 170, 88, .9);
+    }
+
+    .flight-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 18;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .flight-route {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: .38;
+    }
+
+    .flight-route path {
+      fill: none;
+      stroke: var(--sea);
+      stroke-width: 2;
+      stroke-dasharray: 8 16;
+      stroke-linecap: round;
+    }
+
+    .flight-route .route-progress {
+      stroke: var(--ink);
+      stroke-width: 2.2;
+      stroke-dasharray: 1;
+      stroke-dashoffset: var(--route-offset, 1);
+      opacity: .72;
+    }
+
+    .flight-pin {
+      fill: var(--paper);
+      stroke: var(--ink);
+      stroke-width: 1.4;
+      filter: drop-shadow(0 10px 16px rgba(23, 22, 21, .14));
+    }
+
+    .flight-pin.active {
+      fill: var(--sea);
+      stroke: var(--sea);
+    }
+
+    .travel-plane {
+      --plane-x: 10vw;
+      --plane-y: 72vh;
+      --plane-angle: -18deg;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 22;
+      width: clamp(108px, 11vw, 176px);
+      aspect-ratio: 1.55;
+      transform:
+        translate3d(calc(var(--plane-x) - 50%), calc(var(--plane-y) - 50%), 0)
+        rotate(var(--plane-angle))
+        perspective(780px)
+        rotateX(54deg)
+        rotateY(-8deg);
+      transform-origin: center;
+      filter: drop-shadow(0 26px 28px rgba(23, 22, 21, .2));
+      transition: filter .2s ease;
+    }
+
+    .travel-plane svg {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+    }
+
+    .plane-shadow {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      top: 58%;
+      height: 26%;
+      border-radius: 999px;
+      background: radial-gradient(ellipse at center, rgba(23, 22, 21, .2), transparent 68%);
+      transform: translateY(30px) scaleX(1.2);
+      filter: blur(6px);
+      z-index: 1;
+    }
+
+    .flight-deck {
+      position: fixed;
+      right: clamp(18px, 4vw, 58px);
+      bottom: clamp(22px, 6vh, 68px);
+      z-index: 24;
+      width: min(300px, calc(100vw - 36px));
+      padding: 14px;
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .66);
+      box-shadow: 0 24px 70px rgba(23, 22, 21, .1);
+      backdrop-filter: blur(18px);
+      pointer-events: none;
+    }
+
+    .flight-deck small {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--sea);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .flight-deck strong {
+      display: block;
+      margin-top: 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 28px;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .flight-progress {
+      position: relative;
+      height: 2px;
+      margin-top: 14px;
+      overflow: hidden;
+      background: rgba(23, 22, 21, .13);
+    }
+
+    .flight-progress span {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--flight-progress, 0%);
+      background: linear-gradient(90deg, var(--sea), var(--gold));
+      transition: width .25s ease;
+    }
+
+    body.conversion-focus .flight-layer,
+    body.conversion-focus .travel-plane,
+    body.conversion-focus .flight-deck,
+    body.lodging-focus .flight-layer,
+    body.lodging-focus .travel-plane,
+    body.lodging-focus .flight-deck,
+    body.experience-focus .flight-layer,
+    body.experience-focus .travel-plane,
+    body.experience-focus .flight-deck,
+    body.booking-focus .flight-layer,
+    body.booking-focus .travel-plane,
+    body.booking-focus .flight-deck {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    body.detail-open .flight-layer,
+    body.detail-open .flight-deck,
+    body.detail-open .travel-plane {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .site {
+      position: relative;
+      z-index: 2;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 30;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      min-height: 74px;
+      padding: 16px clamp(18px, 4vw, 58px);
+      border-bottom: 1px solid rgba(248, 242, 231, .11);
+      background: rgba(6, 8, 7, .62);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      display: block;
+      object-fit: contain;
+      opacity: .94;
+      filter: drop-shadow(0 1px 0 rgba(245, 239, 229, .28));
+    }
+
+    .brand strong {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .brand-line {
+      width: min(9vw, 82px);
+      height: 1px;
+      background: currentColor;
+      opacity: .35;
+    }
+
+    .site-nav {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      z-index: 45;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      padding: 5px;
+      border: 1px solid rgba(248, 242, 231, .14);
+      border-radius: 999px;
+      background: rgba(248, 242, 231, .06);
+      backdrop-filter: blur(18px);
+    }
+
+    .site-nav a {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 13px;
+      border-radius: 999px;
+      color: rgba(248, 242, 231, .7);
+      font-size: 13px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .site-nav a:hover {
+      color: var(--ink);
+      background: rgba(248, 242, 231, .1);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      color: rgba(248, 242, 231, .7);
+      font-size: 13px;
+      min-width: 0;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid rgba(248, 242, 231, .22);
+      border-radius: 999px;
+      background: var(--ink);
+      color: #111310;
+      font-size: 13px;
+      font-weight: 900;
+      white-space: nowrap;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, .24);
+    }
+
+    .button.dark {
+      background: #101310;
+      color: var(--ink);
+      border-color: rgba(248, 242, 231, .16);
+    }
+
+    .hero {
+      position: relative;
+      min-height: 108svh;
+      display: grid;
+      grid-template-columns: minmax(0, .92fr) minmax(360px, .7fr);
+      gap: clamp(22px, 5vw, 88px);
+      align-items: end;
+      padding: 126px clamp(18px, 4vw, 58px) 74px;
+      overflow: hidden;
+      color: var(--paper);
+      background:
+        linear-gradient(90deg, rgba(17, 19, 16, .94) 0%, rgba(17, 19, 16, .82) 43%, rgba(17, 19, 16, .34) 100%),
+        url("aethera-assets/villa-del-viento-portada-clean.jpeg");
+      background-size: cover;
+      background-position: center;
+      isolation: isolate;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(245, 239, 229, .08) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(245, 239, 229, .07) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(90deg, black, transparent 72%);
+    }
+
+    .hero-copy {
+      max-width: 760px;
+    }
+
+    .kicker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 18px;
+      color: var(--sea);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .kicker::before {
+      content: "";
+      width: 36px;
+      height: 1px;
+      background: currentColor;
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 820px;
+      font-size: clamp(54px, 7.5vw, 118px);
+      line-height: .86;
+    }
+
+    .hero-lede {
+      max-width: 560px;
+      margin: 22px 0 0;
+      color: rgba(248, 242, 231, .82);
+      font-size: clamp(16px, 1.22vw, 20px);
+      line-height: 1.48;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .hero-manifest {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      max-width: 650px;
+      margin-top: 26px;
+      overflow: hidden;
+      border: 1px solid rgba(245, 239, 229, .18);
+      border-radius: var(--radius);
+      background: rgba(245, 239, 229, .18);
+    }
+
+    .hero-manifest span {
+      min-height: 96px;
+      padding: 13px;
+      background: rgba(17, 19, 16, .54);
+      backdrop-filter: blur(12px);
+      color: rgba(245, 239, 229, .72);
+      font-size: 12px;
+      line-height: 1.34;
+    }
+
+    .hero-manifest strong {
+      display: block;
+      margin-bottom: 14px;
+      color: var(--paper);
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .value-panel {
+      align-self: center;
+      padding: 18px;
+      border: 1px solid rgba(248, 242, 231, .15);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(248, 242, 231, .11), rgba(248, 242, 231, .05));
+      box-shadow: 0 28px 80px rgba(0, 0, 0, .34);
+      backdrop-filter: blur(18px);
+    }
+
+    .experience-ticket {
+      align-self: end;
+      width: min(100%, 470px);
+      justify-self: end;
+      padding: 14px;
+      border: 1px solid rgba(245, 239, 229, .28);
+      border-radius: var(--radius);
+      background: rgba(245, 239, 229, .82);
+      color: var(--ink);
+      box-shadow: 0 34px 90px rgba(0, 0, 0, .28);
+      transform: translateY(18px);
+    }
+
+    .ticket-head,
+    .ticket-route,
+    .ticket-meta {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .ticket-head {
+      padding: 4px 2px 14px;
+      border-bottom: 1px solid rgba(23, 22, 21, .16);
+    }
+
+    .ticket-head span,
+    .ticket-meta span {
+      color: var(--sea);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .ticket-head strong {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .ticket-photo {
+      position: relative;
+      height: clamp(220px, 36vh, 360px);
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: #111310;
+    }
+
+    .ticket-photo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 42%, rgba(0, 0, 0, .58));
+    }
+
+    .ticket-route {
+      padding: 18px 2px 10px;
+    }
+
+    .ticket-route strong {
+      display: block;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(34px, 3vw, 52px);
+      font-weight: 400;
+      line-height: .86;
+    }
+
+    .ticket-route small {
+      color: rgba(23, 22, 21, .58);
+      font-size: 12px;
+      font-weight: 850;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    .ticket-meta {
+      padding-top: 14px;
+      border-top: 1px dashed rgba(23, 22, 21, .22);
+    }
+
+    .ticket-meta strong {
+      font-size: 14px;
+      text-align: right;
+    }
+
+    .booking-strip {
+      position: relative;
+      z-index: 8;
+      width: min(1180px, calc(100% - clamp(36px, 8vw, 116px)));
+      margin: -34px auto 0;
+      padding: 8px;
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .78);
+      box-shadow: 0 22px 62px rgba(23, 22, 21, .12);
+      backdrop-filter: blur(18px);
+    }
+
+    .quick-booking {
+      display: grid;
+      grid-template-columns: .88fr .88fr minmax(220px, 1.1fr) .62fr auto;
+      gap: 0;
+      overflow: hidden;
+      border-radius: 999px;
+      background: transparent;
+    }
+
+    .booking-field {
+      display: grid;
+      gap: 5px;
+      min-height: 56px;
+      padding: 8px 18px;
+      border-right: 1px solid rgba(23, 22, 21, .12);
+      background: transparent;
+    }
+
+    .booking-field label {
+      color: var(--sea);
+      font-size: 9px;
+      font-weight: 950;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .booking-field input,
+    .booking-field select {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 850;
+      outline: none;
+    }
+
+    .booking-field input[type="number"] {
+      max-width: 80px;
+    }
+
+    .booking-field input[type="date"] {
+      color-scheme: light;
+    }
+
+    .booking-submit {
+      min-width: 136px;
+      min-height: 56px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .value-photo {
+      position: relative;
+      min-height: clamp(360px, 60vh, 680px);
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: #111;
+      isolation: isolate;
+    }
+
+    .value-photo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, .04), rgba(0, 0, 0, .72));
+      z-index: 1;
+    }
+
+    .value-photo img {
+      transform: scale(1.04);
+      filter: saturate(1.05) contrast(1.04);
+    }
+
+    .value-caption {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      z-index: 2;
+    }
+
+    .value-caption strong {
+      display: block;
+      font-size: 13px;
+      color: rgba(248, 242, 231, .68);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .value-caption p {
+      max-width: 460px;
+      margin: 10px 0 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 3.7vw, 56px);
+      line-height: 1;
+    }
+
+    .hero-stamp {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: center;
+      max-width: 560px;
+      margin-top: 28px;
+      padding: 14px;
+      border: 1px solid rgba(248, 242, 231, .16);
+      border-radius: var(--radius);
+      background: rgba(248, 242, 231, .07);
+      backdrop-filter: blur(16px);
+    }
+
+    .hero-stamp strong {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(215, 170, 88, .7);
+      border-radius: 50%;
+      color: var(--gold);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 28px;
+      font-weight: 400;
+    }
+
+    .hero-stamp span {
+      color: rgba(248, 242, 231, .74);
+      font-size: 14px;
+      line-height: 1.42;
+    }
+
+    .scroll-cue {
+      position: absolute;
+      left: clamp(18px, 4vw, 58px);
+      bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(248, 242, 231, .58);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .scroll-cue span {
+      width: 1px;
+      height: 42px;
+      background: linear-gradient(180deg, var(--gold), transparent);
+      animation: pulseLine 1.6s ease-in-out infinite;
+    }
+
+    @keyframes pulseLine {
+      50% {
+        transform: translateY(10px);
+        opacity: .45;
+      }
+    }
+
+    .chapter {
+      min-height: 100svh;
+      display: grid;
+      grid-template-columns: minmax(0, .78fr) minmax(320px, .52fr);
+      gap: clamp(24px, 5vw, 96px);
+      align-items: center;
+      padding: 110px clamp(18px, 4vw, 58px);
+    }
+
+    .chapter-copy {
+      max-width: 760px;
+    }
+
+    .chapter-index {
+      color: var(--gold);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 42px;
+      line-height: 1;
+    }
+
+    .chapter h2 {
+      margin-top: 14px;
+      font-size: clamp(44px, 7vw, 112px);
+      line-height: .88;
+    }
+
+    .chapter p {
+      max-width: 590px;
+      margin: 22px 0 0;
+      color: rgba(248, 242, 231, .78);
+      font-size: 18px;
+      line-height: 1.55;
+    }
+
+    .chapter-facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 11px;
+      border: 1px solid rgba(248, 242, 231, .16);
+      border-radius: 999px;
+      background: rgba(248, 242, 231, .07);
+      color: rgba(248, 242, 231, .7);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .stop-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 520px;
+      border: 1px solid rgba(248, 242, 231, .16);
+      border-radius: var(--radius);
+      background: rgba(8, 11, 9, .66);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, .42);
+      transform-style: preserve-3d;
+      transition: transform .25s ease, border-color .25s ease;
+    }
+
+    .stop-card:hover {
+      border-color: rgba(215, 170, 88, .5);
+    }
+
+    .stop-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      background: radial-gradient(260px circle at var(--mx) var(--my), rgba(255, 244, 209, .22), transparent 50%);
+      mix-blend-mode: screen;
+    }
+
+    .stop-card img {
+      height: 62%;
+      min-height: 310px;
+      filter: saturate(1.08) contrast(1.04);
+    }
+
+    .stop-body {
+      position: relative;
+      z-index: 3;
+      padding: 20px;
+    }
+
+    .stop-body small {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gold);
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .stop-body h3 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 3vw, 44px);
+      line-height: 1;
+      font-weight: 400;
+    }
+
+    .stop-body p {
+      margin: 12px 0 0;
+      color: rgba(248, 242, 231, .73);
+      font-size: 14px;
+      line-height: 1.48;
+    }
+
+    .destination-terminal {
+      padding: 112px clamp(18px, 4vw, 58px);
+      background:
+        radial-gradient(680px circle at 78% 24%, rgba(47, 127, 145, .14), transparent 44%),
+        var(--paper);
+      color: var(--paper-ink);
+    }
+
+    .terminal-shell {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(280px, .42fr) minmax(0, .58fr);
+      gap: clamp(24px, 5vw, 76px);
+      align-items: center;
+      min-height: min(86vh, 840px);
+      padding: clamp(18px, 3vw, 34px);
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(90deg, rgba(23, 22, 21, .045) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(23, 22, 21, .04) 1px, transparent 1px),
+        rgba(255, 253, 248, .7);
+      background-size: 38px 38px;
+      box-shadow: 0 26px 80px rgba(23, 22, 21, .1);
+      overflow: hidden;
+    }
+
+    .terminal-copy {
+      max-width: 560px;
+      align-self: center;
+    }
+
+    .terminal-copy h2 {
+      color: var(--paper-ink);
+      font-size: clamp(44px, 6.4vw, 96px);
+      line-height: .88;
+    }
+
+    .terminal-copy p:not(.kicker) {
+      max-width: 520px;
+      margin: 22px 0 0;
+      color: rgba(23, 22, 21, .66);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .terminal-tabs {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 28px;
+      padding: 6px;
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .75);
+    }
+
+    .terminal-tab {
+      min-height: 36px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: rgba(23, 22, 21, .62);
+      font-size: 12px;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .terminal-tab.active {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .terminal-scene {
+      position: relative;
+      min-height: clamp(520px, 72vh, 700px);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #111310;
+      box-shadow: 0 30px 90px rgba(23, 22, 21, .2);
+    }
+
+    .destination-panel {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.03);
+      transition: opacity .45s ease, transform .65s ease;
+    }
+
+    .destination-panel.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    .destination-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, transparent 28%, rgba(0, 0, 0, .72)),
+        radial-gradient(360px circle at var(--mx) var(--my), rgba(245, 239, 229, .2), transparent 58%);
+    }
+
+    .terminal-card {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      z-index: 2;
+      padding: 18px;
+      border: 1px solid rgba(245, 239, 229, .22);
+      border-radius: var(--radius);
+      background: rgba(245, 239, 229, .86);
+      color: var(--ink);
+      backdrop-filter: blur(16px);
+    }
+
+    .terminal-card small,
+    .terminal-concierge span {
+      color: var(--sea);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .terminal-card h3 {
+      margin: 8px 0 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(38px, 4.6vw, 72px);
+      font-weight: 400;
+      line-height: .9;
+    }
+
+    .terminal-card p {
+      max-width: 640px;
+      margin: 14px 0 0;
+      color: rgba(23, 22, 21, .66);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .terminal-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .terminal-options button,
+    .terminal-concierge a {
+      min-height: 36px;
+      padding: 0 13px;
+      border: 1px solid rgba(23, 22, 21, .14);
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .terminal-concierge {
+      position: absolute;
+      left: clamp(18px, 3vw, 34px);
+      bottom: clamp(18px, 3vw, 34px);
+      z-index: 3;
+      width: min(360px, calc(100% - 36px));
+      padding: 16px;
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .82);
+      box-shadow: 0 22px 70px rgba(23, 22, 21, .12);
+      backdrop-filter: blur(16px);
+    }
+
+    .terminal-concierge::before {
+      content: "";
+      float: left;
+      width: 44px;
+      height: 44px;
+      margin: 0 12px 10px 0;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 34%, #f5efe5 0 16%, transparent 17%),
+        linear-gradient(135deg, var(--sea), var(--gold));
+      box-shadow: inset 0 0 0 1px rgba(23, 22, 21, .18);
+    }
+
+    .terminal-concierge p {
+      margin: 10px 0 14px;
+      color: rgba(23, 22, 21, .68);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .route-sketch {
+      min-height: 190svh;
+      padding: 110px clamp(18px, 4vw, 58px);
+      background: var(--paper);
+      color: var(--paper-ink);
+    }
+
+    .route-sketch-inner {
+      position: sticky;
+      top: 96px;
+      min-height: calc(100svh - 120px);
+      display: grid;
+      grid-template-columns: minmax(280px, .42fr) minmax(0, .58fr);
+      gap: clamp(28px, 5vw, 82px);
+      align-items: center;
+    }
+
+    .sketch-copy {
+      max-width: 500px;
+    }
+
+    .sketch-copy h2 {
+      font-size: clamp(44px, 6.4vw, 94px);
+      line-height: .88;
+      color: var(--paper-ink);
+    }
+
+    .sketch-copy p {
+      margin: 22px 0 0;
+      color: rgba(23, 22, 21, .66);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .sketch-status {
+      display: grid;
+      gap: 9px;
+      margin-top: 28px;
+      color: rgba(23, 22, 21, .62);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .sketch-status span {
+      height: 2px;
+      overflow: hidden;
+      background: rgba(23, 22, 21, .12);
+    }
+
+    .sketch-status span::before {
+      content: "";
+      display: block;
+      width: var(--sketch-progress, 0%);
+      height: 100%;
+      background: linear-gradient(90deg, var(--sea), var(--gold));
+      transition: width .18s ease;
+    }
+
+    .sketch-board {
+      position: relative;
+      min-height: min(72vh, 680px);
+      padding: clamp(14px, 2vw, 24px);
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(90deg, rgba(23, 22, 21, .045) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(23, 22, 21, .04) 1px, transparent 1px),
+        rgba(255, 253, 248, .66);
+      background-size: 36px 36px;
+      box-shadow: 0 28px 80px rgba(23, 22, 21, .1);
+      overflow: hidden;
+    }
+
+    .sketch-board svg {
+      width: 100%;
+      height: 100%;
+      min-height: 560px;
+      display: block;
+    }
+
+    .draw-line {
+      fill: none;
+      stroke: var(--ink);
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .draw-line.teal {
+      stroke: var(--sea);
+    }
+
+    .draw-line.gold {
+      stroke: var(--gold);
+    }
+
+    .draw-line.soft {
+      stroke-width: 3;
+      opacity: .72;
+    }
+
+    .sketch-fill {
+      fill: rgba(47, 127, 145, .1);
+      stroke: none;
+      opacity: calc(var(--sketch-alpha, 0) * 1);
+      transition: opacity .18s ease;
+    }
+
+    .sketch-label {
+      fill: rgba(23, 22, 21, .62);
+      font-size: 18px;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .story-map {
+      position: relative;
+      min-height: 220svh;
+      padding: 90px clamp(18px, 4vw, 58px);
+      background:
+        linear-gradient(180deg, transparent, rgba(245, 239, 229, .96) 14%, #f5efe5 88%, transparent);
+      color: var(--paper-ink);
+    }
+
+    .story-inner {
+      position: sticky;
+      top: 96px;
+      min-height: calc(100svh - 120px);
+      display: grid;
+      grid-template-columns: minmax(320px, .72fr) minmax(0, 1fr);
+      gap: clamp(22px, 5vw, 72px);
+      align-items: center;
+    }
+
+    .atlas h2 {
+      font-size: clamp(44px, 7vw, 108px);
+      line-height: .88;
+      color: var(--paper-ink);
+    }
+
+    .atlas p {
+      max-width: 550px;
+      margin: 22px 0 0;
+      color: #615950;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .atlas-legend {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .legend-item {
+      min-height: 108px;
+      padding: 14px;
+      border: 1px solid rgba(23, 22, 21, .14);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .7);
+    }
+
+    .legend-item strong {
+      display: block;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px;
+      font-weight: 400;
+    }
+
+    .legend-item span {
+      display: block;
+      margin-top: 8px;
+      color: #6d6258;
+      font-size: 13px;
+      line-height: 1.3;
+    }
+
+    .collection {
+      display: grid;
+      gap: 12px;
+    }
+
+    .property-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      width: 100%;
+      min-height: 84px;
+      padding: 12px 14px;
+      border: 1px solid rgba(23, 22, 21, .14);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .72);
+      color: var(--paper-ink);
+      text-align: left;
+      transition: transform .22s ease, background .22s ease, box-shadow .22s ease;
+    }
+
+    .property-row:hover,
+    .property-row.active {
+      transform: translateX(-8px);
+      background: #fffdf8;
+      box-shadow: 0 20px 50px rgba(33, 25, 15, .14);
+    }
+
+    .row-number {
+      color: var(--clay);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 25px;
+    }
+
+    .property-row h3 {
+      margin: 0 0 5px;
+      font-size: 17px;
+      line-height: 1.1;
+    }
+
+    .property-row p {
+      margin: 0;
+      color: #6d6258;
+      font-size: 13px;
+      line-height: 1.25;
+    }
+
+    .row-action {
+      display: grid;
+      gap: 6px;
+      justify-items: end;
+    }
+
+    .row-action small {
+      color: var(--sea);
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .conversion-panel {
+      position: relative;
+      overflow: hidden;
+      padding: 108px clamp(18px, 4vw, 58px);
+      background:
+        radial-gradient(720px circle at 12% 18%, rgba(201, 148, 62, .16), transparent 46%),
+        linear-gradient(120deg, #fbf7ee 0%, #f2ece0 48%, #e7f1ed 100%);
+      color: var(--paper-ink);
+    }
+
+    .conversion-panel::before {
+      content: "";
+      position: absolute;
+      inset: 34px clamp(18px, 4vw, 58px);
+      border: 1px solid rgba(201, 148, 62, .18);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 16% 24%, rgba(47, 127, 145, .12), transparent 18%),
+        linear-gradient(90deg, rgba(201, 148, 62, .045) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(201, 148, 62, .035) 1px, transparent 1px);
+      background-size: auto, 54px 54px, 54px 54px;
+      pointer-events: none;
+    }
+
+    .conversion-inner {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: minmax(290px, .42fr) minmax(0, .58fr);
+      gap: clamp(26px, 5vw, 70px);
+      align-items: stretch;
+      padding: clamp(18px, 3.4vw, 42px);
+      border: 1px solid rgba(201, 148, 62, .22);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(480px circle at 18% 18%, rgba(255, 253, 248, .8), transparent 46%),
+        rgba(255, 253, 248, .56);
+      box-shadow: 0 30px 90px rgba(99, 75, 40, .12);
+    }
+
+    .conversion-copy {
+      display: grid;
+      align-content: start;
+      padding: clamp(18px, 3vw, 30px);
+      border: 1px solid rgba(23, 22, 21, .1);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255, 253, 248, .86), rgba(245, 239, 229, .62));
+    }
+
+    .conversion-copy h2 {
+      max-width: 520px;
+      color: var(--paper-ink);
+      font-size: clamp(46px, 5.6vw, 86px);
+      line-height: .88;
+    }
+
+    .conversion-copy p {
+      max-width: 560px;
+      margin: 20px 0 0;
+      color: rgba(23, 22, 21, .66);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .conversion-proof {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .conversion-proof span {
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 11px;
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: 999px;
+      background: rgba(245, 239, 229, .74);
+      color: rgba(23, 22, 21, .68);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .conversion-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 26px;
+    }
+
+    .conversion-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(190px, 1fr));
+      gap: 12px;
+    }
+
+    .conversion-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      min-height: 116px;
+      padding: 16px 18px;
+      border: 1px solid rgba(23, 22, 21, .1);
+      border-radius: var(--radius);
+      background: rgba(245, 239, 229, .78);
+    }
+
+    .conversion-card.compact {
+      min-height: 132px;
+      background: rgba(239, 248, 245, .9);
+      border-color: rgba(47, 127, 145, .24);
+    }
+
+    .conversion-card:not(:last-child)::after {
+      content: none;
+    }
+
+    .conversion-step {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      margin-top: 2px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .conversion-card strong {
+      display: block;
+      color: var(--sea);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .conversion-card p {
+      margin: 8px 0 0;
+      color: rgba(23, 22, 21, .7);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .funnel-shortcuts {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .funnel-option {
+      position: relative;
+      min-height: 190px;
+      display: grid;
+      align-content: space-between;
+      overflow: hidden;
+      padding: 18px;
+      border: 1px solid rgba(23, 22, 21, .13);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(240px circle at 82% 18%, var(--route-glow, rgba(47, 127, 145, .18)), transparent 55%),
+        linear-gradient(135deg, rgba(255, 253, 248, .92), var(--route-tint, rgba(239, 248, 245, .9)));
+      color: var(--ink);
+      text-align: left;
+      box-shadow: 0 20px 48px rgba(99, 75, 40, .1);
+    }
+
+    .funnel-option::before {
+      content: attr(data-step);
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid rgba(23, 22, 21, .12);
+      background: rgba(255, 253, 248, .72);
+      color: var(--sea);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 22px;
+    }
+
+    .funnel-option::after {
+      content: "";
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      width: 86px;
+      height: 86px;
+      border: 1px dashed rgba(47, 127, 145, .28);
+      border-radius: 50%;
+      transform: rotate(-16deg);
+      opacity: .75;
+    }
+
+    .funnel-option.featured {
+      grid-row: auto;
+      min-height: 190px;
+    }
+
+    .funnel-option small {
+      display: block;
+      color: var(--sea);
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .funnel-option strong {
+      display: block;
+      margin-top: 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 3vw, 44px);
+      font-weight: 400;
+      line-height: .95;
+    }
+
+    .funnel-option span {
+      display: block;
+      margin-top: 10px;
+      max-width: 330px;
+      color: rgba(23, 22, 21, .66);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .funnel-option em {
+      width: fit-content;
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      margin-top: 14px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 950;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .funnel-option:hover {
+      border-color: rgba(215, 170, 88, .55);
+      transform: translateY(-4px);
+      background:
+        radial-gradient(260px circle at 82% 18%, var(--route-glow, rgba(47, 127, 145, .22)), transparent 58%),
+        linear-gradient(135deg, #fffdf8, var(--route-tint, rgba(239, 248, 245, .96)));
+    }
+
+    .conversion-cta,
+    .conversion-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .conversion-cta {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .conversion-secondary {
+      border: 1px solid rgba(23, 22, 21, .16);
+      background: rgba(255, 253, 248, .75);
+      color: var(--ink);
+    }
+
+    .immersive-gallery {
+      position: relative;
+      overflow: hidden;
+      padding: 88px clamp(18px, 4vw, 58px);
+      background:
+        radial-gradient(820px circle at 82% 12%, rgba(47, 127, 145, .2), transparent 45%),
+        linear-gradient(180deg, #eef8f6 0%, #f9fcf7 52%, #f5efe5 100%);
+      color: var(--paper-ink);
+    }
+
+    .immersive-gallery::before {
+      content: "";
+      position: absolute;
+      inset: 34px clamp(18px, 4vw, 58px);
+      border: 1px solid rgba(47, 127, 145, .18);
+      border-radius: 18px;
+      background:
+        linear-gradient(90deg, rgba(47, 127, 145, .035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(47, 127, 145, .03) 1px, transparent 1px);
+      background-size: 46px 46px;
+      box-shadow: inset 0 0 0 1px rgba(255, 253, 248, .72);
+      pointer-events: none;
+    }
+
+    .lodging-desk {
+      position: relative;
+      z-index: 25;
+      display: grid;
+      gap: 24px;
+    }
+
+    .desk-intro {
+      display: grid;
+      grid-template-columns: minmax(260px, .48fr) minmax(280px, .52fr);
+      gap: clamp(18px, 4vw, 48px);
+      align-items: center;
+      padding: 18px;
+      border: 1px solid rgba(47, 127, 145, .16);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .68);
+      box-shadow: 0 18px 54px rgba(47, 127, 145, .1);
+    }
+
+    .desk-intro h2 {
+      max-width: 560px;
+      color: var(--paper-ink);
+      font-size: clamp(34px, 4.2vw, 58px);
+      line-height: .92;
+    }
+
+    .desk-intro p:not(.kicker) {
+      margin: 0;
+      color: rgba(23, 22, 21, .66);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .lodging-reserve-strip {
+      display: grid;
+      grid-template-columns: minmax(220px, .42fr) minmax(260px, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 14px 16px;
+      border: 1px solid rgba(47, 127, 145, .2);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(90deg, rgba(17, 19, 16, .92), rgba(47, 127, 145, .76)),
+        rgba(17, 19, 16, .88);
+      box-shadow: 0 20px 58px rgba(47, 127, 145, .12);
+    }
+
+    .lodging-reserve-strip strong {
+      color: var(--paper);
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .lodging-reserve-strip p {
+      margin: 0;
+      color: rgba(245, 239, 229, .74);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .lodging-reserve-strip a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+      white-space: nowrap;
+      box-shadow: 0 16px 36px rgba(23, 22, 21, .18);
+    }
+
+    .lodging-workspace {
+      display: grid;
+      grid-template-columns: minmax(240px, .25fr) minmax(0, .5fr) minmax(240px, .25fr);
+      gap: 12px;
+      align-items: stretch;
+      padding: 12px;
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(560px circle at 78% 8%, rgba(102, 174, 184, .18), transparent 48%),
+        linear-gradient(90deg, rgba(47, 127, 145, .052) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(47, 127, 145, .045) 1px, transparent 1px),
+        rgba(255, 253, 248, .82);
+      background-size: 36px 36px;
+      box-shadow: 0 28px 82px rgba(47, 127, 145, .16), inset 0 0 0 1px rgba(255, 253, 248, .7);
+    }
+
+    .lodging-selector {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      padding: 10px;
+      border: 1px solid rgba(23, 22, 21, .1);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .78);
+      box-shadow: inset 0 0 0 1px rgba(47, 127, 145, .05);
+    }
+
+    .lodging-selector strong,
+    .lodging-concierge span {
+      color: var(--sea);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .lodging-option {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: center;
+      min-height: 54px;
+      padding: 8px 10px;
+      border: 1px solid rgba(47, 127, 145, .13);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .66);
+      color: var(--ink);
+      text-align: left;
+    }
+
+    .lodging-option i {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(102, 174, 184, .18);
+      color: var(--sea);
+      font-style: normal;
+      font-weight: 950;
+      font-size: 13px;
+    }
+
+    .lodging-option span {
+      display: block;
+      color: rgba(23, 22, 21, .58);
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .lodging-option.active {
+      background: rgba(47, 127, 145, .16);
+      color: var(--ink);
+      border-color: rgba(47, 127, 145, .34);
+      transform: translateX(6px);
+    }
+
+    .lodging-option.active span {
+      color: rgba(23, 22, 21, .58);
+    }
+
+    .lodging-preview {
+      overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid rgba(23, 22, 21, .12);
+      background: rgba(255, 253, 248, .82);
+      box-shadow: 0 22px 54px rgba(23, 22, 21, .1);
+    }
+
+    .preview-media {
+      position: relative;
+      height: clamp(240px, 38vh, 390px);
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(47, 127, 145, .045) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(47, 127, 145, .04) 1px, transparent 1px),
+        rgba(255, 253, 248, .86);
+      background-size: 34px 34px;
+      cursor: pointer;
+    }
+
+    .preview-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .preview-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 62%, rgba(245, 239, 229, .18));
+    }
+
+    .preview-badge {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      z-index: 2;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: rgba(245, 239, 229, .88);
+      color: var(--sea);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .preview-count {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 2;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .86);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .preview-gallery {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      padding: 10px 12px 0;
+      background: rgba(255, 253, 248, .82);
+    }
+
+    .preview-thumb {
+      position: relative;
+      aspect-ratio: 1.35;
+      overflow: hidden;
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: 10px;
+      background: rgba(245, 239, 229, .7);
+    }
+
+    .preview-thumb::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      box-shadow: inset 0 0 0 0 rgba(47, 127, 145, 0);
+      transition: box-shadow .18s ease;
+    }
+
+    .preview-thumb.active {
+      border-color: var(--sea);
+    }
+
+    .preview-thumb.active::after {
+      box-shadow: inset 0 0 0 3px rgba(47, 127, 145, .34);
+    }
+
+    .preview-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: rgba(255, 253, 248, .74);
+      transition: transform .25s ease;
+    }
+
+    .preview-thumb:hover img {
+      transform: scale(1.06);
+    }
+
+    .preview-copy {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      padding: 14px 16px 16px;
+      align-items: end;
+    }
+
+    .preview-copy h3 {
+      margin: 6px 0 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(34px, 3.8vw, 58px);
+      font-weight: 400;
+      line-height: .9;
+    }
+
+    .preview-copy p {
+      max-width: 620px;
+      margin: 10px 0 0;
+      color: rgba(23, 22, 21, .66);
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .preview-facts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .preview-facts span {
+      min-height: 28px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 10px;
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: 999px;
+      color: rgba(23, 22, 21, .68);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .preview-actions {
+      display: grid;
+      gap: 8px;
+      justify-items: stretch;
+    }
+
+    .preview-consult,
+    .preview-detail {
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .preview-consult {
+      border: 0;
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    .preview-detail {
+      border: 1px solid rgba(23, 22, 21, .16);
+      background: rgba(255, 253, 248, .78);
+      color: var(--ink);
+    }
+
+    .lodging-concierge {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 100%;
+      padding: 14px;
+      border: 1px solid rgba(23, 22, 21, .1);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(220px circle at 30% 16%, rgba(201, 148, 62, .2), transparent 50%),
+        linear-gradient(180deg, rgba(239, 248, 245, .92), rgba(255, 253, 248, .9));
+      align-self: stretch;
+      box-shadow: inset 0 0 0 1px rgba(255, 253, 248, .74);
+    }
+
+    .lodging-concierge::before {
+      content: "";
+      display: block;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 14px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 34%, #f5efe5 0 15%, transparent 16%),
+        linear-gradient(135deg, var(--sea), var(--gold));
+      box-shadow: inset 0 0 0 1px rgba(23, 22, 21, .18);
+    }
+
+    .lodging-concierge h3 {
+      margin: -4px 0 0;
+      max-width: 260px;
+      color: var(--paper-ink);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 3.3vw, 44px);
+      font-weight: 400;
+      line-height: .94;
+    }
+
+    .lodging-concierge p {
+      margin: 0;
+      color: rgba(23, 22, 21, .68);
+      font-size: 14px;
+      line-height: 1.48;
+    }
+
+    .booking-panel-meta {
+      display: grid;
+      gap: 4px;
+      padding: 12px;
+      border: 1px solid rgba(47, 127, 145, .14);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .72);
+    }
+
+    .booking-panel-meta strong {
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .booking-panel-meta small {
+      color: rgba(23, 22, 21, .58);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .booking-panel-list {
+      display: grid;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .booking-panel-list span {
+      position: relative;
+      padding-left: 20px;
+      color: rgba(23, 22, 21, .66);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: none;
+    }
+
+    .booking-panel-list span::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .55em;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 5px rgba(201, 148, 62, .12);
+    }
+
+    .concierge-actions {
+      display: grid;
+      gap: 8px;
+    }
+
+    .concierge-consult,
+    .concierge-detail {
+      width: 100%;
+      min-height: 42px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .concierge-consult {
+      border: 0;
+      background: var(--ink);
+      color: var(--paper);
+      box-shadow: 0 16px 36px rgba(23, 22, 21, .18);
+    }
+
+    .concierge-detail {
+      border: 1px solid rgba(23, 22, 21, .16);
+      background: rgba(255, 253, 248, .78);
+      color: var(--ink);
+    }
+
+    .concierge-note {
+      padding-top: 14px;
+      border-top: 1px dashed rgba(23, 22, 21, .18);
+      color: rgba(23, 22, 21, .56);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .lodging-detail {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: grid;
+      place-items: start center;
+      padding: clamp(14px, 3vw, 34px);
+      background: rgba(245, 239, 229, .78);
+      backdrop-filter: blur(14px);
+      opacity: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      pointer-events: none;
+      transition: opacity .28s ease;
+    }
+
+    .lodging-detail.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .detail-panel {
+      width: min(1240px, calc(100vw - 28px));
+      display: grid;
+      grid-template-columns: minmax(0, .6fr) minmax(360px, .4fr);
+      overflow: visible;
+      border: 1px solid rgba(23, 22, 21, .14);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(90deg, rgba(47, 127, 145, .045) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(47, 127, 145, .04) 1px, transparent 1px),
+        #fffdf8;
+      background-size: 34px 34px;
+      box-shadow: 0 30px 90px rgba(23, 22, 21, .22);
+      transform: translateY(16px) scale(.98);
+      transition: transform .28s ease;
+    }
+
+    .lodging-detail.open .detail-panel {
+      transform: translateY(0) scale(1);
+    }
+
+    .detail-gallery {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      min-height: 0;
+      gap: 12px;
+      padding: 14px;
+      border-right: 1px solid rgba(23, 22, 21, .1);
+      background:
+        radial-gradient(520px circle at 50% 24%, rgba(102, 174, 184, .12), transparent 52%),
+        rgba(245, 239, 229, .42);
+    }
+
+    .detail-main-frame {
+      display: grid;
+      place-items: center;
+      min-height: 0;
+      width: 100%;
+      aspect-ratio: var(--detail-ratio, 4 / 3);
+      height: auto;
+      justify-self: center;
+      overflow: hidden;
+      border: 1px solid rgba(23, 22, 21, .1);
+      border-radius: calc(var(--radius) - 2px);
+      background:
+        linear-gradient(90deg, rgba(47, 127, 145, .045) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(47, 127, 145, .04) 1px, transparent 1px),
+        rgba(255, 253, 248, .82);
+      background-size: 34px 34px;
+    }
+
+    .detail-main-frame.portrait {
+      width: min(430px, 100%);
+    }
+
+    .detail-main-frame.landscape {
+      width: 100%;
+    }
+
+    .detail-main-frame.square {
+      width: min(620px, 100%);
+    }
+
+    .detail-main-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 0;
+    }
+
+    .detail-thumbs {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .detail-thumb {
+      aspect-ratio: 1.35;
+      overflow: hidden;
+      border: 1px solid rgba(23, 22, 21, .14);
+      border-radius: 10px;
+      background: rgba(245, 239, 229, .8);
+    }
+
+    .detail-thumb.active {
+      border-color: var(--sea);
+      box-shadow: inset 0 0 0 2px rgba(47, 127, 145, .3);
+    }
+
+    .detail-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: rgba(255, 253, 248, .7);
+    }
+
+    .detail-copy {
+      position: relative;
+      display: grid;
+      align-content: start;
+      gap: 16px;
+      overflow: visible;
+      padding: clamp(24px, 3vw, 38px);
+      padding-top: clamp(44px, 4vw, 54px);
+    }
+
+    .detail-close {
+      position: sticky;
+      top: 14px;
+      justify-self: end;
+      right: 14px;
+      width: 38px;
+      height: 38px;
+      margin-bottom: -38px;
+      border: 1px solid rgba(23, 22, 21, .14);
+      border-radius: 50%;
+      background: rgba(255, 253, 248, .9);
+      color: var(--ink);
+      font-size: 18px;
+      font-weight: 900;
+      z-index: 4;
+    }
+
+    .detail-copy h2 {
+      max-width: 460px;
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(40px, 4.2vw, 68px);
+      line-height: .92;
+    }
+
+    .detail-copy p:not(.kicker) {
+      margin: 0;
+      color: rgba(23, 22, 21, .68);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .detail-price {
+      width: fit-content;
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 12px;
+      border: 1px solid rgba(47, 127, 145, .2);
+      border-radius: 999px;
+      background: rgba(102, 174, 184, .14);
+      color: var(--sea);
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .detail-block {
+      padding-top: 16px;
+      border-top: 1px solid rgba(23, 22, 21, .1);
+    }
+
+    .detail-block strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--sea);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .detail-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .detail-list span {
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 10px;
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: 999px;
+      background: rgba(245, 239, 229, .7);
+      color: rgba(23, 22, 21, .7);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .detail-consult {
+      min-height: 48px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 12px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .experiences {
+      height: var(--experience-scroll-height, 230svh);
+      padding: 0 clamp(18px, 4vw, 58px);
+      overflow: clip;
+      --experience-bg: #f5efe5;
+      background:
+        radial-gradient(720px circle at 12% 18%, rgba(47, 127, 145, .12), transparent 46%),
+        var(--experience-bg);
+      color: var(--paper-ink);
+    }
+
+    .experience-pin {
+      position: sticky;
+      top: 88px;
+      height: calc(100svh - 88px);
+      min-height: 620px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 26px 0 24px;
+    }
+
+    .split-header {
+      display: grid;
+      grid-template-columns: minmax(0, .85fr) minmax(280px, .55fr);
+      gap: clamp(22px, 5vw, 78px);
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .split-header h2 {
+      max-width: 780px;
+      color: var(--paper-ink);
+      font-size: clamp(38px, 5.2vw, 74px);
+      line-height: .92;
+    }
+
+    .split-header p {
+      margin: 0;
+      color: #635b52;
+      line-height: 1.55;
+      font-size: 17px;
+    }
+
+    .experience-viewport {
+      position: relative;
+      overflow: hidden;
+      margin-inline: calc(clamp(18px, 4vw, 58px) * -1);
+      padding-inline: clamp(18px, 4vw, 58px);
+    }
+
+    .experience-viewport::after {
+      content: "";
+      position: absolute;
+      inset: 0 0 0 auto;
+      width: min(46px, 6vw);
+      background: linear-gradient(90deg, transparent, var(--experience-bg));
+      pointer-events: none;
+    }
+
+    .experience-track {
+      --experience-shift: 0px;
+      display: flex;
+      gap: 18px;
+      width: max-content;
+      padding: 4px 0 12px;
+      transform: translate3d(var(--experience-shift), 0, 0);
+      will-change: transform;
+    }
+
+    .experience-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .experience-track::-webkit-scrollbar-track {
+      background: rgba(23, 22, 21, .08);
+      border-radius: 999px;
+    }
+
+    .experience-track::-webkit-scrollbar-thumb {
+      background: linear-gradient(90deg, var(--sea), var(--gold));
+      border-radius: 999px;
+    }
+
+    .experience {
+      position: relative;
+      flex: 0 0 clamp(340px, 40vw, 560px);
+      height: clamp(390px, 52svh, 560px);
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+      padding: 18px;
+      border-radius: var(--radius);
+      color: var(--paper);
+      background:
+        linear-gradient(180deg, rgba(17, 19, 16, .06), rgba(17, 19, 16, .78)),
+        var(--image);
+      background-size: cover;
+      background-position: var(--experience-position, center);
+      box-shadow: 0 20px 60px rgba(33, 25, 15, .13);
+    }
+
+    .experience::before {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgba(245, 239, 229, .24);
+      border-radius: calc(var(--radius) - 2px);
+      pointer-events: none;
+    }
+
+    .experience small {
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      z-index: 1;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .86);
+      color: var(--sea);
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .experience h3 {
+      margin: 0 0 10px;
+      color: var(--paper);
+      font-size: clamp(26px, 3vw, 38px);
+      line-height: 1;
+    }
+
+    .experience p {
+      margin: 0;
+      color: rgba(245, 239, 229, .82);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .experience button {
+      width: fit-content;
+      min-height: 36px;
+      margin-top: 16px;
+      padding: 0 13px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .92);
+      color: var(--ink);
+      font-size: 11px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .experience--cerro {
+      justify-content: flex-start;
+      padding-top: clamp(92px, 12vh, 132px);
+    }
+
+    .experience--cerro::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 42%;
+      background: linear-gradient(180deg, transparent, rgba(17, 19, 16, .52));
+      pointer-events: none;
+    }
+
+    .experience-scroll-note {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+      color: rgba(23, 22, 21, .55);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .experience-scroll-note::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(47, 127, 145, .45), transparent);
+    }
+
+    @media (max-width: 760px) {
+      .experiences {
+        height: auto;
+        padding-top: 78px;
+        padding-bottom: 78px;
+      }
+
+      .experience-pin {
+        position: relative;
+        top: auto;
+        min-height: 0;
+        padding: 0;
+      }
+
+      .experience-viewport {
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .experience-viewport::after {
+        display: none;
+      }
+
+      .experience-track {
+        transform: none !important;
+        transition: none;
+      }
+
+      .experience {
+        flex-basis: min(84vw, 380px);
+        scroll-snap-align: start;
+      }
+    }
+
+    .guest-proof,
+    .traveler-profile {
+      padding: 112px clamp(18px, 4vw, 58px);
+      background: var(--paper);
+      color: var(--paper-ink);
+    }
+
+    .guest-proof {
+      display: grid;
+      grid-template-columns: minmax(280px, .42fr) minmax(0, .58fr);
+      gap: clamp(22px, 5vw, 80px);
+      align-items: center;
+      border-top: 1px solid rgba(23, 22, 21, .08);
+    }
+
+    .proof-copy {
+      display: grid;
+      gap: 18px;
+    }
+
+    .proof-copy h2,
+    .profile-copy h2 {
+      max-width: 720px;
+      color: var(--paper-ink);
+      font-size: clamp(42px, 6vw, 86px);
+      line-height: .9;
+    }
+
+    .proof-copy p,
+    .profile-copy p {
+      max-width: 560px;
+      margin: 0;
+      color: rgba(23, 22, 21, .64);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .review-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .review-card {
+      padding: 24px;
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(255, 253, 248, .9), rgba(239, 248, 245, .72)),
+        rgba(255, 253, 248, .86);
+      box-shadow: 0 20px 60px rgba(47, 127, 145, .1);
+    }
+
+    .review-card header {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .review-card strong {
+      display: block;
+      color: var(--ink);
+      font-size: 17px;
+    }
+
+    .review-card small,
+    .review-card time {
+      color: rgba(23, 22, 21, .56);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .review-card p {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      font-size: clamp(22px, 2.4vw, 34px);
+      line-height: 1.16;
+    }
+
+    .review-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .review-tags span {
+      padding: 7px 10px;
+      border: 1px solid rgba(23, 22, 21, .1);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .78);
+      color: rgba(23, 22, 21, .62);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .traveler-profile {
+      display: grid;
+      grid-template-columns: minmax(280px, .4fr) minmax(0, .6fr);
+      gap: clamp(22px, 5vw, 72px);
+      align-items: start;
+      background:
+        radial-gradient(760px circle at 82% 10%, rgba(215, 170, 88, .2), transparent 46%),
+        linear-gradient(180deg, #f5efe5 0%, var(--paper) 100%);
+    }
+
+    .profile-card {
+      display: grid;
+      gap: 14px;
+      padding: clamp(18px, 3vw, 34px);
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .82);
+      box-shadow: 0 26px 78px rgba(47, 127, 145, .12);
+    }
+
+    .profile-form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .profile-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .profile-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .profile-field label {
+      color: var(--sea);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .profile-field input,
+    .profile-field select,
+    .profile-field textarea {
+      width: 100%;
+      min-height: 50px;
+      border: 1px solid rgba(23, 22, 21, .14);
+      border-radius: 14px;
+      background: rgba(255, 253, 248, .86);
+      color: var(--ink);
+      font: inherit;
+      font-weight: 750;
+      padding: 0 14px;
+      outline: 0;
+    }
+
+    .profile-field textarea {
+      min-height: 102px;
+      padding-top: 14px;
+      resize: vertical;
+    }
+
+    .profile-submit {
+      min-height: 52px;
+      grid-column: 1 / -1;
+      border: 0;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 13px;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .profile-note {
+      margin: 0;
+      color: rgba(23, 22, 21, .56);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .booking {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 112px clamp(18px, 4vw, 58px);
+      background:
+        linear-gradient(90deg, rgba(17, 19, 16, .92), rgba(17, 19, 16, .58)),
+        url("aethera-assets/lodging/villa-venecia-098.jpg");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .booking-box {
+      width: min(1180px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, .96fr) minmax(320px, .62fr);
+      gap: clamp(22px, 4vw, 54px);
+      align-items: stretch;
+      padding: clamp(22px, 4vw, 46px);
+      border: 1px solid rgba(248, 242, 231, .16);
+      border-radius: var(--radius);
+      background: rgba(7, 10, 8, .68);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, .42);
+      backdrop-filter: blur(18px);
+    }
+
+    .booking-copy {
+      display: grid;
+      align-content: center;
+    }
+
+    .booking-box h2 {
+      max-width: 840px;
+      font-size: clamp(42px, 6.2vw, 88px);
+      line-height: .9;
+    }
+
+    .booking-box p {
+      max-width: 650px;
+      margin: 22px 0 30px;
+      color: rgba(248, 242, 231, .76);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .booking-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .booking-form .button {
+      grid-column: 1 / -1;
+      width: fit-content;
+      min-width: 210px;
+    }
+
+    .contact-panel {
+      display: grid;
+      gap: 12px;
+      align-content: stretch;
+      padding: clamp(16px, 2.5vw, 26px);
+      border: 1px solid rgba(248, 242, 231, .16);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255, 253, 248, .88), rgba(245, 239, 229, .74)),
+        rgba(255, 253, 248, .82);
+      color: var(--ink);
+      box-shadow: 0 22px 70px rgba(0, 0, 0, .24);
+    }
+
+    .contact-panel h3 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 3.2vw, 48px);
+      font-weight: 400;
+      line-height: .96;
+    }
+
+    .contact-panel p {
+      margin: 0;
+      color: rgba(23, 22, 21, .66);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .contact-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 72px;
+      padding: 12px;
+      border: 1px solid rgba(23, 22, 21, .12);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .8);
+      box-shadow: 0 14px 36px rgba(47, 127, 145, .08);
+    }
+
+    .contact-card.primary {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: rgba(23, 22, 21, .3);
+    }
+
+    .contact-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(47, 127, 145, .12);
+      color: var(--sea);
+      font-size: 18px;
+      font-weight: 950;
+    }
+
+    .contact-card.primary .contact-icon {
+      background: rgba(255, 253, 248, .12);
+      color: var(--paper);
+    }
+
+    .contact-card span {
+      display: block;
+      color: currentColor;
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      opacity: .68;
+    }
+
+    .contact-card strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .contact-card em {
+      font-style: normal;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      color: rgba(248, 242, 231, .72);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .field input {
+      width: 100%;
+      height: 48px;
+      padding: 0 14px;
+      border: 1px solid rgba(248, 242, 231, .18);
+      border-radius: var(--radius);
+      background: rgba(248, 242, 231, .08);
+      color: var(--ink);
+      outline: none;
+    }
+
+    .field input:focus {
+      border-color: rgba(215, 170, 88, .8);
+      box-shadow: 0 0 0 3px rgba(215, 170, 88, .14);
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 28px clamp(18px, 4vw, 58px);
+      color: rgba(248, 242, 231, .62);
+      background: #050706;
+      border-top: 1px solid rgba(248, 242, 231, .12);
+      font-size: 13px;
+    }
+
+    footer strong {
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-weight: 400;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .footer-links a {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 13px;
+      border: 1px solid rgba(245, 239, 229, .16);
+      border-radius: 999px;
+      background: rgba(245, 239, 229, .06);
+      color: rgba(245, 239, 229, .86);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .footer-links a:hover {
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(34px);
+      transition: opacity .85s ease, transform .85s ease;
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cursor {
+      border-color: rgba(23, 22, 21, .72);
+      mix-blend-mode: multiply;
+    }
+
+    .cursor.active {
+      border-color: rgba(47, 127, 145, .9);
+    }
+
+    .topbar {
+      border-bottom-color: rgba(23, 22, 21, .12);
+      background: rgba(245, 239, 229, .82);
+    }
+
+    .site-nav {
+      border-color: rgba(23, 22, 21, .12);
+      background: rgba(255, 253, 248, .58);
+    }
+
+    .site-nav a,
+    .top-actions {
+      color: rgba(23, 22, 21, .66);
+    }
+
+    .site-nav a:hover {
+      color: var(--ink);
+      background: rgba(23, 22, 21, .06);
+    }
+
+    .button {
+      border-color: rgba(23, 22, 21, .12);
+      background: var(--ink);
+      color: var(--paper);
+      box-shadow: 0 18px 42px rgba(23, 22, 21, .12);
+    }
+
+    .button.dark {
+      background: rgba(255, 253, 248, .72);
+      color: var(--ink);
+      border-color: rgba(23, 22, 21, .16);
+    }
+
+    .top-actions .button.dark {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: rgba(23, 22, 21, .12);
+    }
+
+    .hero-lede,
+    .chapter p {
+      color: rgba(23, 22, 21, .72);
+    }
+
+    .hero .kicker {
+      color: var(--sea);
+    }
+
+    .hero .hero-lede {
+      color: rgba(245, 239, 229, .82);
+    }
+
+    .hero .scroll-cue {
+      color: rgba(245, 239, 229, .64);
+    }
+
+    .value-panel {
+      border-color: rgba(23, 22, 21, .12);
+      background: rgba(255, 253, 248, .52);
+      box-shadow: 0 28px 80px rgba(23, 22, 21, .1);
+    }
+
+    .value-caption {
+      color: var(--paper);
+    }
+
+    .hero-stamp {
+      border-color: rgba(23, 22, 21, .12);
+      background: rgba(255, 253, 248, .58);
+    }
+
+    .hero-stamp strong {
+      border-color: rgba(47, 127, 145, .48);
+      color: var(--sea);
+    }
+
+    .hero-stamp span,
+    .scroll-cue {
+      color: rgba(23, 22, 21, .64);
+    }
+
+    .scroll-cue span {
+      background: linear-gradient(180deg, var(--sea), transparent);
+    }
+
+    .chapter-index {
+      color: var(--sea);
+    }
+
+    .pill {
+      border-color: rgba(23, 22, 21, .12);
+      background: rgba(255, 253, 248, .56);
+      color: rgba(23, 22, 21, .65);
+    }
+
+    .stop-card {
+      border-color: rgba(23, 22, 21, .1);
+      background: #111310;
+      color: var(--paper);
+      box-shadow: 0 28px 80px rgba(23, 22, 21, .14);
+    }
+
+    .stop-card:hover {
+      border-color: rgba(47, 127, 145, .46);
+    }
+
+    .stop-card::before {
+      background: radial-gradient(260px circle at var(--mx) var(--my), rgba(47, 127, 145, .2), transparent 50%);
+    }
+
+    .stop-body small {
+      color: var(--sea);
+    }
+
+    .stop-body p {
+      color: rgba(245, 239, 229, .72);
+    }
+
+    .story-map,
+    .immersive-gallery,
+    .experiences,
+    .guest-proof,
+    .traveler-profile {
+      background: var(--paper);
+      color: var(--paper-ink);
+    }
+
+    .story-map {
+      background:
+        linear-gradient(180deg, transparent, rgba(245, 239, 229, .96) 10%, #f5efe5 92%, transparent);
+    }
+
+    .experiences {
+      --experience-bg: #f5efe5;
+      background:
+        radial-gradient(720px circle at 12% 18%, rgba(47, 127, 145, .12), transparent 46%),
+        var(--experience-bg);
+    }
+
+    .desk-intro p:not(.kicker),
+    .split-header p,
+    .review-card small,
+    .review-card time {
+      color: rgba(23, 22, 21, .62);
+    }
+
+    .experience {
+      color: var(--paper);
+      box-shadow: 0 20px 60px rgba(23, 22, 21, .12);
+    }
+
+    .review-card {
+      border-color: rgba(23, 22, 21, .12);
+      background: rgba(255, 253, 248, .62);
+    }
+
+    .booking {
+      color: var(--paper);
+      background:
+        linear-gradient(90deg, rgba(17, 19, 16, .86), rgba(17, 19, 16, .42)),
+        url("aethera-assets/lodging/villa-venecia-098.jpg");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .booking-box {
+      border-color: rgba(245, 239, 229, .18);
+      background: rgba(17, 19, 16, .66);
+    }
+
+    .booking .field input {
+      color: var(--paper);
+    }
+
+    .booking .field input::placeholder {
+      color: rgba(245, 239, 229, .5);
+    }
+
+    .booking .button {
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    .contact-panel {
+      background:
+        linear-gradient(180deg, rgba(255, 253, 248, .9), rgba(245, 239, 229, .76)),
+        rgba(255, 253, 248, .84);
+    }
+
+    footer {
+      color: rgba(245, 239, 229, .66);
+      background: #111310;
+      border-top-color: rgba(245, 239, 229, .12);
+    }
+
+    footer strong {
+      color: var(--paper);
+    }
+
+    @media (max-width: 1120px) {
+      .topbar,
+      .hero,
+      .chapter,
+      .terminal-shell,
+      .route-sketch-inner,
+      .story-inner,
+      .conversion-inner,
+      .split-header,
+      .guest-proof,
+      .traveler-profile {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        align-items: center;
+        padding-bottom: 110px;
+      }
+
+      .experience-ticket {
+        justify-self: start;
+        max-width: 560px;
+        transform: none;
+      }
+
+      .topbar {
+        position: sticky;
+        justify-items: start;
+        max-width: 100vw;
+        overflow: visible;
+      }
+
+      .top-actions {
+        width: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+      }
+
+      .site-nav {
+        position: fixed;
+        left: 18px;
+        right: 18px;
+        bottom: 14px;
+        top: auto;
+        z-index: 42;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        width: auto;
+        max-width: none;
+        transform: none;
+        overflow: hidden;
+        border-color: rgba(23, 22, 21, .14);
+        background: rgba(255, 253, 248, .9);
+        box-shadow: 0 18px 42px rgba(23, 22, 21, .16);
+        backdrop-filter: blur(18px);
+        min-height: 46px;
+        align-items: center;
+      }
+
+      .site-nav a {
+        color: rgba(23, 22, 21, .72);
+        justify-content: center;
+        padding: 0 6px;
+        font-size: 12px;
+      }
+
+      body {
+        padding-bottom: 68px;
+      }
+
+      .quick-booking {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .conversion-grid,
+      .funnel-shortcuts {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+
+      .funnel-option.featured {
+        grid-row: auto;
+        min-height: 190px;
+      }
+
+      .booking-field.property,
+      .booking-submit {
+        grid-column: 1 / -1;
+      }
+
+      .story-inner {
+        position: relative;
+        top: 0;
+      }
+
+      .experience-track {
+        display: flex;
+      }
+
+      .experience {
+        flex-basis: min(420px, 78vw);
+      }
+
+      .desk-intro,
+      .lodging-reserve-strip,
+      .lodging-workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .lodging-reserve-strip a {
+        justify-self: start;
+      }
+
+      .preview-media {
+        height: 320px;
+      }
+
+      .preview-gallery {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .detail-panel {
+        grid-template-columns: 1fr;
+        overflow: visible;
+      }
+
+      .detail-gallery {
+        display: block;
+        border-right: 0;
+        border-bottom: 1px solid rgba(23, 22, 21, .1);
+      }
+
+      .detail-main-frame {
+        height: auto;
+      }
+
+      .detail-main-frame.portrait {
+        width: min(360px, 100%);
+      }
+
+      .detail-main-frame.landscape {
+        width: 100%;
+        height: auto;
+      }
+
+      .detail-thumbs {
+        margin-top: 12px;
+      }
+
+      .detail-copy {
+        max-height: none;
+        overflow: visible;
+        padding-top: clamp(22px, 4vw, 34px);
+      }
+
+      .detail-copy h2 {
+        font-size: clamp(38px, 8vw, 58px);
+      }
+
+    }
+
+    @media (max-width: 720px) {
+      html {
+        scroll-padding-top: 132px;
+      }
+
+      [id] {
+        scroll-margin-top: 132px;
+      }
+
+      .cursor {
+        display: none;
+      }
+
+      .topbar {
+        grid-template-columns: 1fr;
+        gap: 9px;
+        align-items: start;
+        justify-items: stretch;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        padding: 10px 14px 12px;
+        min-height: 0;
+      }
+
+      .brand {
+        width: 100%;
+      }
+
+      .brand-mark {
+        width: 32px;
+        height: 32px;
+      }
+
+      .brand strong {
+        font-size: 22px;
+      }
+
+      .brand-line {
+        flex: 1;
+        width: auto;
+      }
+
+      .site-nav {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: 10px;
+        z-index: 42;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        width: auto;
+        max-width: none;
+        overflow: hidden;
+        gap: 4px;
+        padding: 4px;
+        border-color: rgba(23, 22, 21, .14);
+        background: rgba(255, 253, 248, .88);
+        box-shadow: 0 18px 42px rgba(23, 22, 21, .16);
+        backdrop-filter: blur(18px);
+      }
+
+      .site-nav a {
+        min-height: 34px;
+        padding: 0 3px;
+        font-size: 9.5px;
+        flex: none;
+        justify-content: center;
+      }
+
+      .top-actions {
+        flex-wrap: wrap;
+      }
+
+      .top-actions a[href^="mailto"] {
+        display: none;
+      }
+
+      .top-actions .button {
+        width: 100%;
+        max-width: calc(100vw - 28px);
+        min-height: 38px;
+      }
+
+      .hero,
+      .chapter,
+      .destination-terminal,
+      .route-sketch,
+      .booking-strip,
+      .story-map,
+      .immersive-gallery,
+      .experiences,
+      .guest-proof,
+      .traveler-profile,
+      .booking {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      h1 {
+        font-size: clamp(44px, 13vw, 68px);
+      }
+
+      .hero h1 {
+        max-width: 8.6ch;
+        font-size: clamp(42px, 12vw, 54px);
+        overflow-wrap: normal;
+      }
+
+      .hero-copy {
+        max-width: calc(100vw - 36px);
+      }
+
+      .hero-lede {
+        max-width: calc(100vw - 36px);
+        font-size: 15px;
+      }
+
+      .hero-manifest {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-manifest span {
+        min-height: auto;
+      }
+
+      .booking-strip {
+        width: calc(100% - 36px);
+        margin-top: -24px;
+        border-radius: var(--radius);
+        padding: 10px;
+      }
+
+      .quick-booking {
+        grid-template-columns: 1fr;
+        border-radius: var(--radius);
+        gap: 1px;
+        background: rgba(23, 22, 21, .1);
+      }
+
+      .booking-field {
+        min-height: 64px;
+        border-right: 0;
+        background: rgba(255, 253, 248, .9);
+      }
+
+      .booking-submit {
+        min-height: 52px;
+        border-radius: var(--radius);
+      }
+
+      .desk-intro,
+      .lodging-reserve-strip {
+        padding: 14px;
+      }
+
+      .lodging-workspace {
+        padding: 8px;
+      }
+
+      .lodging-selector {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 8px;
+        scrollbar-width: none;
+      }
+
+      .lodging-selector::-webkit-scrollbar {
+        display: none;
+      }
+
+      .lodging-selector > strong {
+        flex: 0 0 auto;
+        align-self: center;
+        padding: 0 8px;
+      }
+
+      .lodging-option {
+        flex: 0 0 min(270px, 76vw);
+      }
+
+      .preview-media {
+        height: clamp(260px, 55svh, 420px);
+      }
+
+      .booking-box {
+        padding: 18px;
+      }
+
+      .booking-form .button {
+        width: 100%;
+      }
+
+      .contact-card {
+        grid-template-columns: auto 1fr;
+      }
+
+      .contact-card em {
+        display: none;
+      }
+
+      .chapter h2,
+      .terminal-copy h2,
+      .sketch-copy h2,
+      .desk-intro h2,
+      .split-header h2,
+      .proof-copy h2,
+      .profile-copy h2,
+      .booking-box h2,
+      .atlas h2 {
+        font-size: clamp(42px, 14vw, 68px);
+      }
+
+      .flight-deck {
+        left: 18px;
+        right: 18px;
+        bottom: 14px;
+        width: auto;
+      }
+
+      .travel-plane {
+        width: 104px;
+      }
+
+      .terminal-shell {
+        padding-bottom: 220px;
+      }
+
+      .terminal-scene {
+        min-height: 520px;
+      }
+
+      .terminal-concierge {
+        left: 18px;
+        right: 18px;
+        bottom: 18px;
+        width: auto;
+      }
+
+      .route-sketch-inner {
+        position: relative;
+        top: 0;
+      }
+
+      .sketch-board svg {
+        min-height: 420px;
+      }
+
+      .stop-card {
+        min-height: 420px;
+      }
+
+      .booking-box,
+      .atlas-legend,
+      .conversion-grid,
+      .funnel-shortcuts,
+      .profile-form,
+      .booking-form {
+        grid-template-columns: 1fr;
+      }
+
+      .experience {
+        flex-basis: min(330px, 82vw);
+        min-height: 390px;
+      }
+
+      .property-row {
+        grid-template-columns: auto 1fr;
+      }
+
+      .row-action {
+        grid-column: 2;
+        justify-items: start;
+      }
+
+      .preview-copy {
+        grid-template-columns: 1fr;
+      }
+
+      .preview-gallery {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 2px;
+      }
+
+      .preview-thumb {
+        min-width: 82px;
+      }
+
+      .lodging-detail {
+        padding: 10px;
+      }
+
+      .detail-panel {
+        max-height: none;
+        width: min(100%, calc(100vw - 20px));
+      }
+
+      .detail-gallery {
+        display: block;
+        padding: 10px;
+      }
+
+      .detail-main-frame {
+        height: auto;
+        min-height: 0;
+      }
+
+      .detail-main-frame.portrait {
+        width: min(340px, 100%);
+      }
+
+      .detail-main-frame.landscape {
+        width: 100%;
+        height: auto;
+      }
+
+      .detail-thumbs {
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+
+      .detail-thumb {
+        min-width: 76px;
+      }
+
+      .detail-copy {
+        padding: 18px;
+      }
+
+      .detail-copy h2 {
+        font-size: clamp(36px, 13vw, 54px);
+      }
+
+      .lodging-concierge {
+        min-height: auto;
+      }
+
+      footer {
+        flex-direction: column;
+      }
+
+      .footer-links {
+        justify-content: flex-start;
+      }
+
+      body {
+        padding-bottom: 64px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      html {
+        scroll-padding-top: 132px;
+      }
+
+      [id] {
+        scroll-margin-top: 132px;
+      }
+
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .experiences {
+        height: auto;
+        padding-top: 78px;
+        padding-bottom: 78px;
+      }
+
+      .experience-pin {
+        position: relative;
+        top: auto;
+        min-height: 0;
+        padding: 0;
+      }
+
+      .experience-viewport {
+        overflow-x: auto;
+      }
+
+      .experience-track {
+        transform: none !important;
+        transition: none;
+      }
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .001ms !important;
+        transition-duration: .001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader" id="loader" aria-label="Cargando AETHERA">
+    <div class="loader-core">
+      <div class="loader-stage">
+        <div class="loader-topline">
+          <span>AETHERA</span>
+          <span>Private stays · Colombia</span>
+        </div>
+        <div class="loader-flight" aria-hidden="true">
+          <svg viewBox="0 0 700 130" preserveAspectRatio="none">
+            <path class="loader-route-base" pathLength="1" d="M34 82 C155 16 262 118 366 60 C474 0 568 36 660 22"></path>
+            <path class="loader-route-progress" pathLength="1" d="M34 82 C155 16 262 118 366 60 C474 0 568 36 660 22"></path>
+          </svg>
+          <span class="loader-plane">
+            <svg viewBox="0 0 132 88" role="img" aria-label="Avión de papel">
+              <polygon class="paper-body" points="7 47 124 10 83 50 110 78 58 60 31 79"></polygon>
+              <polygon class="paper-fold" points="7 47 83 50 124 10 57 60"></polygon>
+              <path class="paper-line" d="M30 43 L86 25"></path>
+              <path class="paper-line" d="M39 48 L78 36"></path>
+              <path class="paper-line" d="M50 55 L72 48"></path>
+              <path class="paper-margin" d="M42 34 L81 62"></path>
+            </svg>
+          </span>
+        </div>
+        <p class="loader-message">Tu próximo descanso ya sabe <span>dónde encontrarte.</span></p>
+        <div class="loader-progress-wrap">
+          <span>AETHERA</span>
+          <div class="loader-bar"><span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+  <div class="flight-layer" aria-hidden="true">
+    <svg class="flight-route" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+      <path d="M 62 735 C 170 515 300 560 405 370 C 535 135 735 190 790 438 C 845 685 765 805 928 612"></path>
+      <path id="routeProgress" class="route-progress" pathLength="1" d="M 62 735 C 170 515 300 560 405 370 C 535 135 735 190 790 438 C 845 685 765 805 928 612"></path>
+      <circle class="flight-pin active" data-pin="0" cx="62" cy="735" r="8"></circle>
+      <circle class="flight-pin" data-pin="1" cx="405" cy="370" r="8"></circle>
+      <circle class="flight-pin" data-pin="2" cx="928" cy="612" r="8"></circle>
+    </svg>
+    <div class="travel-plane" id="travelPlane">
+      <span class="plane-shadow"></span>
+      <svg viewBox="0 0 220 142" role="img" aria-label="Avión AETHERA">
+        <defs>
+          <linearGradient id="planeBody" x1="0%" x2="100%" y1="0%" y2="0%">
+            <stop offset="0%" stop-color="#f4eadc"></stop>
+            <stop offset="48%" stop-color="#fffdf8"></stop>
+            <stop offset="100%" stop-color="#d9d0c3"></stop>
+          </linearGradient>
+          <linearGradient id="planeGlass" x1="0%" x2="100%">
+            <stop offset="0%" stop-color="#b8e3e8"></stop>
+            <stop offset="100%" stop-color="#2f7f91"></stop>
+          </linearGradient>
+        </defs>
+        <path d="M202 71c-15-13-53-25-104-28L35 10c-7-4-16-1-19 6l52 33c-22 3-42 9-55 18-8 5-8 13 0 18 13 9 33 15 55 18l-52 33c3 7 12 10 19 6l63-33c51-3 89-15 104-28 4-3 4-7 0-10Z" fill="url(#planeBody)" stroke="#171615" stroke-width="3" stroke-linejoin="round"></path>
+        <path d="M88 45 38 17c-6-3-13 0-16 5l50 31Z" fill="#2f7f91" opacity=".92"></path>
+        <path d="M88 97 38 125c-6 3-13 0-16-5l50-31Z" fill="#2f7f91" opacity=".92"></path>
+        <path d="M113 43c25 3 51 10 70 20-18 2-48 3-84 1-14-1-20-18-6-21 5-1 12-1 20 0Z" fill="url(#planeGlass)" opacity=".78"></path>
+        <path d="M182 63c8 4 15 8 20 12-5 4-12 8-20 12-10-7-10-17 0-24Z" fill="#171615"></path>
+        <path d="M95 70h82" stroke="#171615" stroke-width="4" stroke-linecap="round" opacity=".18"></path>
+        <path d="M74 51c-16 3-30 8-42 14M74 91c-16-3-30-8-42-14" stroke="#171615" stroke-width="3" stroke-linecap="round" opacity=".24"></path>
+      </svg>
+    </div>
+  </div>
+
+  <div class="flight-deck" aria-hidden="true">
+    <small><span>Vuelo AETHERA</span><span id="flightCode">01</span></small>
+    <strong id="flightDestination">Costa Caribe</strong>
+    <div class="flight-progress"><span id="flightProgress"></span></div>
+  </div>
+
+  <div class="site">
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="AETHERA inicio"><img class="brand-mark" src="aethera-assets/aethera-logo-silhouette.png" alt="" aria-hidden="true"><strong>AETHERA</strong><span class="brand-line" aria-hidden="true"></span></a>
+      <div class="top-actions">
+        <a href="mailto:aetherabysolvers@gmail.com">aetherabysolvers@gmail.com</a>
+        <a class="button dark" href="https://wa.me/573217039846" target="_blank" rel="noreferrer">+57 321 703 9846</a>
+      </div>
+    </header>
+    <nav class="site-nav" aria-label="Secciones">
+      <a href="#disponibilidad">Disponibilidad</a>
+      <a href="#experiencias">Experiencias</a>
+      <a href="#galeria">Alojamientos</a>
+      <a href="#reservar">Reservar</a>
+    </nav>
+
+    <main id="inicio">
+      <section class="hero">
+        <div class="hero-copy reveal">
+          <p class="kicker">Boarding privado · Colombia</p>
+          <h1>Tu viaje empieza antes de llegar</h1>
+          <p class="hero-lede">AETHERA no te muestra una lista de casas: te embarca en una ruta privada por Colombia. Cada destino mezcla alojamiento, paisaje, anfitriones y experiencias locales para que la estadía se sienta diseñada, no reservada.</p>
+          <div class="hero-manifest">
+            <span><strong>01 / Despegue</strong>Elige una zona y deja que el recorrido empiece como una historia, no como una búsqueda.</span>
+            <span><strong>02 / Destino</strong>Casa privada, privacidad real y una atmósfera pensada para quedarse en la memoria.</span>
+            <span><strong>03 / Experiencia</strong>Mar, río, café, montaña y planes locales integrados al ritmo de tu viaje.</span>
+          </div>
+        </div>
+
+        <aside class="experience-ticket reveal">
+          <div class="ticket-head">
+            <span>Vuelo AETHERA</span>
+            <strong>COL-03</strong>
+          </div>
+          <div class="ticket-photo">
+            <img src="aethera-assets/lodging/villa-venecia-027.jpg" alt="Piscina y paisaje de Villa Venecia">
+          </div>
+          <div class="ticket-route">
+            <strong>Caribe<br>Río<br>Montaña</strong>
+            <small>3 destinos<br>6 casas privadas</small>
+          </div>
+          <div class="ticket-meta">
+            <span>Estado</span>
+            <strong>Listo para despegar</strong>
+          </div>
+        </aside>
+
+        <div class="scroll-cue"><span></span>Scroll para despegar</div>
+      </section>
+
+      <section class="booking-strip" id="disponibilidad" aria-label="Reserva rápida">
+        <form class="quick-booking" id="quickBookingForm">
+          <div class="booking-field">
+            <label for="checkin">Llegada</label>
+            <input id="checkin" name="checkin" type="date" required>
+          </div>
+          <div class="booking-field">
+            <label for="checkout">Salida</label>
+            <input id="checkout" name="checkout" type="date" required>
+          </div>
+          <div class="booking-field property">
+            <label for="quickProperty">Alojamiento</label>
+            <select id="quickProperty" name="property" required>
+              <option value="" selected disabled>Selecciona una casa</option>
+              <option>Villa del Viento</option>
+              <option>Casa Blanca</option>
+              <option>Zaguán de los Lagos</option>
+              <option>Villa Venecia</option>
+              <option>Refugio Malcriado</option>
+              <option>Quinta Esencia</option>
+            </select>
+          </div>
+          <div class="booking-field">
+            <label for="quickGuests">Personas</label>
+            <input id="quickGuests" name="guests" type="number" min="1" max="30" value="2" required>
+          </div>
+          <button class="booking-submit" type="submit">Consultar</button>
+        </form>
+      </section>
+
+      <section class="destination-terminal" id="viaje" aria-label="Terminal de destinos AETHERA">
+        <div class="terminal-shell reveal">
+          <div class="terminal-copy">
+            <p class="kicker">Terminal AETHERA</p>
+            <h2>Aterriza y deja que te orientemos</h2>
+            <p>En lugar de bajar por una lista de alojamientos, aquí eliges el tipo de destino. La escena cambia, la recomendación se ajusta y puedes consultar la casa que encaja con tu viaje.</p>
+            <div class="terminal-tabs" role="tablist" aria-label="Destinos">
+              <button class="terminal-tab active" type="button" data-terminal="0">Costa Caribe</button>
+              <button class="terminal-tab" type="button" data-terminal="1">Cauca Viejo</button>
+              <button class="terminal-tab" type="button" data-terminal="2">Venecia</button>
+            </div>
+          </div>
+
+          <div class="terminal-scene">
+            <article class="destination-panel active" data-panel="0" data-destination="Costa Caribe">
+            <img src="aethera-assets/villa-del-viento-portada-clean.jpeg" alt="Villa del Viento en el Caribe">
+              <div class="terminal-card">
+                <small>Has aterrizado en</small>
+                <h3>Costa Caribe</h3>
+                <p>Brisa, arena y casas para bajar el volumen. Ideal si buscas mar, privacidad y planes tranquilos cerca del agua.</p>
+                <div class="terminal-options">
+                  <button type="button" data-property="Villa del Viento">Villa del Viento</button>
+                  <button type="button" data-property="Casa Blanca">Casa Blanca</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="destination-panel" data-panel="1" data-destination="Cauca Viejo">
+              <img src="aethera-assets/lodging/portada-cauca.jpg" alt="Zaguán de los Lagos en Cauca Viejo">
+              <div class="terminal-card">
+                <small>Has aterrizado en</small>
+                <h3>Cauca Viejo</h3>
+                <p>Una parada para reunirse: piscina privada, casa amplia, ritmo colonial y días cómodos para grupos.</p>
+                <div class="terminal-options">
+                  <button type="button" data-property="Zaguán de los Lagos">Zaguán de los Lagos</button>
+                </div>
+              </div>
+            </article>
+
+            <article class="destination-panel" data-panel="2" data-destination="Venecia, Antioquia">
+              <img src="aethera-assets/lodging/photo-2025-09-16-12-57-54.jpg" alt="Refugio Malcriado en Venecia">
+              <div class="terminal-card">
+                <small>Has aterrizado en</small>
+                <h3>Venecia</h3>
+                <p>Montaña, café, arquitectura y Cerro Tusa. Ideal para quienes quieren paisaje, silencio y experiencias rurales.</p>
+                <div class="terminal-options">
+                  <button type="button" data-property="Villa Venecia">Villa Venecia</button>
+                  <button type="button" data-property="Refugio Malcriado">Refugio Malcriado</button>
+                  <button type="button" data-property="Quinta Esencia">Quinta Esencia</button>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <aside class="terminal-concierge">
+            <span>Concierge AETHERA</span>
+            <p id="conciergeText">Si vienes por mar y desconexión, empieza por Villa del Viento. Si quieres algo más exclusivo en Tolú, mira Casa Blanca.</p>
+            <a href="#disponibilidad">Consultar fechas</a>
+          </aside>
+        </div>
+      </section>
+
+      <section class="route-sketch" id="bitacora">
+        <div class="route-sketch-inner">
+          <div class="sketch-copy reveal">
+            <p class="kicker">Bitácora en vuelo</p>
+            <h2>La estadía se arma en el camino</h2>
+            <p>Mientras avanzas, AETHERA va uniendo lo que hace que el viaje tenga sentido: la ruta que te lleva, la casa que te recibe, el paisaje que cambia el ritmo y las experiencias que completan cada destino.</p>
+            <div class="sketch-status">
+              <strong>Completar bitácora</strong>
+              <span></span>
+            </div>
+          </div>
+
+          <div class="sketch-board reveal" aria-label="Bitácora ilustrada del viaje">
+            <svg viewBox="0 0 900 620" role="img">
+              <path class="sketch-fill" d="M542 266c58-24 132 3 158 59 20 43 11 95-21 128-36 38-95 44-140 17-48-29-70-88-50-138 10-27 28-51 53-66Z"></path>
+              <path class="draw-line teal soft" data-start="0" data-end=".22" d="M70 430 C170 300 265 380 356 240 C448 99 608 130 660 280 C710 426 618 505 807 352"></path>
+              <path class="draw-line" data-start=".16" data-end=".38" d="M119 388 l95-42 l-50 89 l-10-38 l-35-9 Z"></path>
+              <path class="draw-line teal soft" data-start=".24" data-end=".43" d="M154 397 l-36 73 M164 435 l-7 55"></path>
+              <path class="draw-line gold" data-start=".34" data-end=".58" d="M346 390 v-104 l86-68 l88 68 v104 Z M386 390 v-78 h58 v78 M336 286 h194"></path>
+              <path class="draw-line soft" data-start=".44" data-end=".62" d="M376 230 c18-28 42-42 70-42 c30 0 55 16 75 47"></path>
+              <path class="draw-line teal" data-start=".56" data-end=".74" d="M92 528 c38-30 76-30 114 0 c38 30 76 30 114 0 c38-30 76-30 114 0"></path>
+              <path class="draw-line teal soft" data-start=".62" data-end=".8" d="M104 565 c32-24 64-24 96 0 c32 24 64 24 96 0 c32-24 64-24 96 0"></path>
+              <path class="draw-line" data-start=".7" data-end=".9" d="M520 478 l86-156 l54 92 l38-62 l96 126 Z"></path>
+              <path class="draw-line gold soft" data-start=".78" data-end=".96" d="M704 236 c34 14 54 38 60 72 c-34-4-59-21-75-50 c-15 34-39 54-73 60 c3-38 22-65 57-80 c-23-24-31-51-25-82 c31 9 50 30 56 80 Z"></path>
+              <path class="draw-line soft" data-start=".86" data-end="1" d="M684 318 c-16 48-13 95 10 141"></path>
+              <text class="sketch-label" x="70" y="86">Ruta</text>
+              <text class="sketch-label" x="336" y="444">Casa</text>
+              <text class="sketch-label" x="92" y="604">Mar</text>
+              <text class="sketch-label" x="610" y="522">Montaña</text>
+              <text class="sketch-label" x="694" y="138">Café</text>
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="story-map" id="atlas">
+        <div class="story-inner">
+          <div class="atlas reveal">
+            <p class="kicker">Atlas AETHERA</p>
+            <h2>Elige una coordenada, no solo una casa</h2>
+            <p>Cada parada tiene una forma distinta de descansar. El Caribe baja la velocidad, Cauca Viejo reúne, Venecia eleva la mirada. La colección puede crecer sin perder esta lógica de mapa curado.</p>
+            <div class="atlas-legend">
+              <div class="legend-item"><strong>5</strong><span>alojamientos activos</span></div>
+              <div class="legend-item"><strong>3</strong><span>territorios principales</span></div>
+              <div class="legend-item"><strong>11</strong><span>experiencias disponibles</span></div>
+            </div>
+          </div>
+          <div class="collection" id="propertyList" aria-label="Alojamientos"></div>
+        </div>
+      </section>
+
+      <section class="conversion-panel" id="decidir">
+        <div class="conversion-inner reveal">
+          <div class="conversion-copy">
+            <p class="kicker">Elige por sensación</p>
+            <h2>¿Dónde quieres despertar?</h2>
+            <p>Antes de mirar fotos, define el tipo de descanso. Esta parada funciona como un filtro emocional: eliges una intención y AETHERA te lleva a la casa que mejor conversa con ese viaje.</p>
+            <div class="conversion-proof">
+              <span>Filtro por plan</span>
+              <span>Recomendación guiada</span>
+              <span>Sin lista infinita</span>
+            </div>
+            <div class="conversion-actions">
+              <a class="conversion-cta" href="#disponibilidad">Consultar fechas</a>
+              <a class="conversion-secondary" href="#galeria">Ver alojamientos</a>
+            </div>
+          </div>
+          <div class="conversion-grid">
+            <button class="funnel-option featured" type="button" data-step="01" data-funnel-property="Villa del Viento" style="--route-tint:rgba(230, 246, 241, .94);--route-glow:rgba(47, 127, 145, .22)">
+              <div>
+                <small>Busco bajar el ritmo</small>
+                <strong>Mar sin prisa</strong>
+                <span>Una casa para desconectarse, caminar cerca del agua y dejar que el día avance lento.</span>
+              </div>
+              <em>Ver Caribe</em>
+            </button>
+            <button class="funnel-option" type="button" data-step="02" data-funnel-property="Zaguán de los Lagos" style="--route-tint:rgba(250, 241, 222, .95);--route-glow:rgba(201, 148, 62, .24)">
+              <div>
+                <small>Viajo con todos</small>
+                <strong>Reunión cómoda</strong>
+                <span>Piscina, zonas sociales y espacio para que el grupo no tenga que repartirse.</span>
+              </div>
+              <em>Ver grupos</em>
+            </button>
+            <button class="funnel-option" type="button" data-step="03" data-funnel-property="Villa Venecia" style="--route-tint:rgba(236, 243, 228, .96);--route-glow:rgba(142, 166, 109, .25)">
+              <div>
+                <small>Quiero paisaje</small>
+                <strong>Montaña y café</strong>
+                <span>Vista abierta, aire fresco y experiencias rurales para cambiar de altura.</span>
+              </div>
+              <em>Ver montaña</em>
+            </button>
+            <button class="funnel-option" type="button" data-step="04" data-funnel-property="Quinta Esencia" style="--route-tint:rgba(245, 239, 229, .96);--route-glow:rgba(196, 157, 83, .26)">
+              <div>
+                <small>Vamos en pareja</small>
+                <strong>Refugio íntimo</strong>
+                <span>Domo privado, vista a Cerro Tusa y una atmósfera pensada para desconectar juntos.</span>
+              </div>
+              <em>Ver Quinta Esencia</em>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="immersive-gallery" id="galeria">
+        <div class="lodging-desk reveal">
+          <div class="desk-intro">
+            <div>
+              <p class="kicker">Mesa de elección</p>
+              <h2>Elige tu llave</h2>
+            </div>
+            <p>Aquí ya no eliges por sensación, eliges una casa concreta: fotos reales, ubicación, precio base, experiencias y acceso directo a disponibilidad.</p>
+          </div>
+
+          <div class="lodging-reserve-strip">
+            <strong>Modo reserva</strong>
+            <p>Abre una llave, revisa su galería completa y envía la consulta con alojamiento, fechas y personas sin repetir información.</p>
+            <a href="#disponibilidad">Consultar fechas</a>
+          </div>
+
+          <div class="lodging-workspace">
+            <div class="lodging-selector" aria-label="Seleccionar alojamiento">
+              <strong>Llaves disponibles</strong>
+              <button class="lodging-option active" type="button" data-lodging="Villa del Viento"><i>01</i><b>Villa del Viento<span>Caribe · San Bernardo</span></b></button>
+              <button class="lodging-option" type="button" data-lodging="Casa Blanca"><i>02</i><b>Casa Blanca<span>Tolú · Playa del Francés</span></b></button>
+              <button class="lodging-option" type="button" data-lodging="Zaguán de los Lagos"><i>03</i><b>Zaguán de los Lagos<span>Cauca Viejo · Grupos</span></b></button>
+              <button class="lodging-option" type="button" data-lodging="Villa Venecia"><i>04</i><b>Villa Venecia<span>Antioquia · Montaña</span></b></button>
+              <button class="lodging-option" type="button" data-lodging="Refugio Malcriado"><i>05</i><b>Refugio Malcriado<span>Cerro Tusa · Vista</span></b></button>
+              <button class="lodging-option" type="button" data-lodging="Quinta Esencia"><i>06</i><b>Quinta Esencia<span>Venecia · Pareja</span></b></button>
+            </div>
+
+            <article class="lodging-preview">
+              <div class="preview-media">
+                <img id="lodgingImage" src="aethera-assets/villa-del-viento-portada-clean.jpeg" alt="Villa del Viento">
+                <span class="preview-count" id="lodgingGalleryCount">4 fotos</span>
+                <span class="preview-badge" id="lodgingBadge">Caribe privado</span>
+              </div>
+              <div class="preview-gallery" id="lodgingPreviewGallery" aria-label="Galería rápida del alojamiento"></div>
+              <div class="preview-copy">
+                <div>
+                  <p class="kicker" id="lodgingZone">San Bernardo del Viento</p>
+                  <h3 id="lodgingTitle">Villa del Viento</h3>
+                  <p id="lodgingDescription">Para quienes quieren mar, calma y una casa que se sienta retirada del ruido. Es la llave más natural si el viaje busca desconexión y brisa.</p>
+                  <div class="preview-facts" id="lodgingFacts">
+                    <span>Paseo en bote</span>
+                    <span>Privacidad</span>
+                  </div>
+                </div>
+                <div class="preview-actions">
+                  <button class="preview-detail" id="lodgingDetailButton" type="button" data-property="Villa del Viento">Ver ficha completa</button>
+                  <button class="preview-consult" id="lodgingConsult" type="button" data-property="Villa del Viento">Consultar esta casa</button>
+                </div>
+              </div>
+            </article>
+
+            <aside class="lodging-concierge">
+              <span>Reserva guiada</span>
+              <h3 id="bookingPanelTitle">Villa del Viento</h3>
+              <p id="lodgingAdvice">Si buscas mar, calma y una llegada sin afán, esta casa es una primera parada natural para empezar el viaje.</p>
+              <div class="booking-panel-meta">
+                <strong id="bookingPanelPrice">Disponibilidad personalizada</strong>
+                <small id="bookingPanelZone">San Bernardo del Viento, Córdoba</small>
+              </div>
+              <div class="booking-panel-list">
+                <span>Galería completa antes de consultar</span>
+                <span>Fechas y personas listas para enviar</span>
+                <span>Respuesta humana para cerrar la estadía</span>
+              </div>
+              <div class="concierge-actions">
+                <button class="concierge-consult" id="conciergeConsult" type="button" data-property="Villa del Viento">Consultar disponibilidad</button>
+                <button class="concierge-detail" id="conciergeDetail" type="button" data-property="Villa del Viento">Ver ficha completa</button>
+              </div>
+              <div class="concierge-note">Cambia de llave para comparar atmósferas y aterrizar en la casa correcta sin salir del recorrido.</div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <div class="lodging-detail" id="lodgingDetail" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+        <div class="detail-panel">
+          <div class="detail-gallery">
+            <div class="detail-main-frame portrait">
+              <img class="detail-main-image" id="detailImage" src="aethera-assets/villa-del-viento-portada-clean.jpeg" alt="Villa del Viento">
+            </div>
+            <div class="detail-thumbs" id="detailThumbs" aria-label="Galería del alojamiento"></div>
+          </div>
+          <div class="detail-copy">
+            <button class="detail-close" id="detailClose" type="button" aria-label="Cerrar ficha">×</button>
+            <p class="kicker" id="detailLocation">San Bernardo del Viento, Córdoba</p>
+            <h2 id="detailTitle">Villa del Viento</h2>
+            <span class="detail-price" id="detailPrice">Consulta disponibilidad</span>
+            <p id="detailDescription">Entre el mar y la tranquilidad del Caribe, este refugio está diseñado para desconectarse del ruido y reconectarse con lo esencial.</p>
+            <div class="detail-block">
+              <strong>Lo que debes saber</strong>
+              <div class="detail-list" id="detailFacts"></div>
+            </div>
+            <div class="detail-block">
+              <strong>Experiencias que encajan</strong>
+              <div class="detail-list" id="detailExperiences"></div>
+            </div>
+            <button class="detail-consult" id="detailConsult" type="button" data-property="Villa del Viento">Consultar disponibilidad</button>
+          </div>
+        </div>
+      </div>
+
+      <section class="experiences" id="experiencias">
+        <div class="experience-pin">
+          <div class="split-header reveal">
+            <div>
+              <p class="kicker">Actividades por destino</p>
+              <h2>Haz que la estadía también tenga plan</h2>
+            </div>
+            <p>Además de elegir casa, puedes sumar actividades locales según el destino: mar, café, montaña, caballos o cocina. Elige qué quieres vivir y lo agregamos a la consulta.</p>
+          </div>
+          <div class="experience-viewport">
+            <div class="experience-track">
+              <article class="experience reveal" style="--image:url('https://i.postimg.cc/k5bP0Y0V/bote.jpg')">
+                <small>Caribe</small>
+                <h3>Paseo en bote</h3>
+                <p>Salidas al mar para conocer la costa, bañarte en aguas tranquilas y vivir el Caribe con guía local.</p>
+                <button type="button" data-experience="Paseo en bote">Sumar al viaje</button>
+              </article>
+              <article class="experience reveal" style="--image:url('aethera-assets/lodging/tour-del-cafe.jpg')">
+                <small>Montaña</small>
+                <h3>Tour del café</h3>
+                <p>Recorrido por cultivo, recolección y cata para conectar la estadía con el paisaje cafetero.</p>
+                <button type="button" data-experience="Tour del café">Sumar al viaje</button>
+              </article>
+              <article class="experience reveal" style="--image:url('aethera-assets/lodging/tour-abejas.jpeg'); --experience-position:center 46%;">
+                <small>Naturaleza</small>
+                <h3>Tour de las abejas</h3>
+                <p>Ruta de la miel entre montañas, colmenas y degustación local para sumar una experiencia dulce al viaje.</p>
+                <button type="button" data-experience="Tour de las abejas">Sumar al viaje</button>
+              </article>
+              <article class="experience reveal experience--cerro" style="--image:url('aethera-assets/lodging/cerro-tusa.jpg'); --experience-position:center 82%;">
+                <small>Aventura</small>
+                <h3>Cerro Tusa</h3>
+                <p>Senderismo y vista abierta para quienes quieren que el viaje también tenga una conquista memorable.</p>
+                <button type="button" data-experience="Cerro Tusa">Sumar al viaje</button>
+              </article>
+              <article class="experience reveal" style="--image:url('aethera-assets/lodging/tour-karts.jpeg'); --experience-position:center 64%;">
+                <small>Rutas</small>
+                <h3>Tour de karts</h3>
+                <p>Recorridos en kart por rutas panorámicas para vivir la montaña con velocidad, paisaje y adrenalina.</p>
+                <button type="button" data-experience="Tour de karts por diferentes rutas">Sumar al viaje</button>
+              </article>
+              <article class="experience reveal" style="--image:url('aethera-assets/lodging/cabalgata.jpg'); --experience-position:center 76%;">
+                <small>Rural</small>
+                <h3>Cabalgatas</h3>
+                <p>Rutas rurales para recorrer el territorio a otro ritmo, entre montaña, caminos locales y aire abierto.</p>
+                <button type="button" data-experience="Cabalgata">Sumar al viaje</button>
+              </article>
+            </div>
+          </div>
+          <div class="experience-scroll-note">Haz scroll para descubrir actividades y sumarlas a tu consulta</div>
+        </div>
+      </section>
+
+      <section class="guest-proof">
+        <div class="proof-copy reveal">
+          <p class="kicker">Clientes que ya viajaron</p>
+          <h2>Comentarios con detalles, no frases vacías</h2>
+          <p>La confianza se construye con situaciones concretas: quién viajó, qué casa eligió y qué hizo que la estadía se sintiera bien acompañada.</p>
+        </div>
+        <div class="review-grid">
+          <article class="review-card reveal">
+            <header>
+              <div>
+                <strong>Laura M. y familia</strong>
+                <small>Villa del Viento · 9 personas · 3 noches</small>
+              </div>
+              <time>Enero 2026</time>
+            </header>
+            <p>“Llegamos con niños y adultos mayores. La casa estaba lista, el contacto respondió rápido y el plan de bote quedó organizado sin tener que perseguir a nadie.”</p>
+            <div class="review-tags"><span>Familia</span><span>Caribe</span><span>Paseo en bote</span></div>
+          </article>
+          <article class="review-card reveal">
+            <header>
+              <div>
+                <strong>Camilo R.</strong>
+                <small>Villa Venecia · cumpleaños · 12 personas</small>
+              </div>
+              <time>Diciembre 2025</time>
+            </header>
+            <p>“Nos ayudaron a elegir por privacidad, vista y tamaño del grupo. La recomendación fue precisa: no terminamos pagando por una casa que no necesitábamos.”</p>
+            <div class="review-tags"><span>Celebración</span><span>Montaña</span><span>Selección guiada</span></div>
+          </article>
+          <article class="review-card reveal">
+            <header>
+              <div>
+                <strong>Manuela & Andrés</strong>
+                <small>Refugio Malcriado · pareja · escapada</small>
+              </div>
+              <time>Noviembre 2025</time>
+            </header>
+            <p>“Queríamos silencio y vista, no una lista de casas. Nos mostraron pocas opciones, bien explicadas, y eso hizo muy fácil tomar la decisión.”</p>
+            <div class="review-tags"><span>Pareja</span><span>Cerro Tusa</span><span>Desconexión</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="traveler-profile" id="perfil-viaje">
+        <div class="profile-copy reveal">
+          <p class="kicker">Antes de reservar</p>
+          <h2>Cuéntanos el viaje para recomendarte mejor</h2>
+          <p>Entre más claro llegue el perfil del grupo, más rápida y precisa será la respuesta: casa correcta, fechas posibles, experiencias y siguiente paso.</p>
+        </div>
+        <div class="profile-card reveal">
+          <form class="profile-form" id="travelerProfileForm">
+            <div class="profile-field">
+              <label for="profileName">Nombre</label>
+              <input id="profileName" name="profileName" placeholder="Ej. Valentina">
+            </div>
+            <div class="profile-field">
+              <label for="profileGroup">Personas</label>
+              <input id="profileGroup" name="profileGroup" placeholder="Ej. 10 adultos, 2 niños">
+            </div>
+            <div class="profile-field">
+              <label for="profilePurpose">Motivo</label>
+              <select id="profilePurpose" name="profilePurpose">
+                <option value="">Selecciona</option>
+                <option>Descanso familiar</option>
+                <option>Cumpleaños o celebración</option>
+                <option>Viaje en pareja</option>
+                <option>Amigos y experiencias</option>
+                <option>Retiro privado</option>
+              </select>
+            </div>
+            <div class="profile-field">
+              <label for="profileBudget">Presupuesto</label>
+              <select id="profileBudget" name="profileBudget">
+                <option value="">Nivel de inversión</option>
+                <option>Busco una opción práctica y cómoda</option>
+                <option>Quiero equilibrio entre privacidad y experiencia</option>
+                <option>Busco una estadía premium</option>
+                <option>Busco la mejor casa disponible</option>
+              </select>
+            </div>
+            <div class="profile-field">
+              <label for="profileZone">Zona ideal</label>
+              <select id="profileZone" name="profileZone">
+                <option value="">Estoy abierto</option>
+                <option>Caribe</option>
+                <option>Cauca Viejo</option>
+                <option>Montaña / Venecia</option>
+                <option>Quiero recomendación</option>
+              </select>
+            </div>
+            <div class="profile-field">
+              <label for="profileDates">Fechas</label>
+              <input id="profileDates" name="profileDates" placeholder="Ej. Marzo 21 al 24">
+            </div>
+            <div class="profile-field full">
+              <label for="profileMusts">Lo más importante</label>
+              <textarea id="profileMusts" name="profileMusts" placeholder="Ej. piscina privada, buena cocina, silencio, actividades para niños, vista, mar cerca..."></textarea>
+            </div>
+            <button class="profile-submit" type="submit">Enviar perfil del viaje</button>
+          </form>
+          <p class="profile-note">Este formulario no confirma reserva. Sirve para que AETHERA responda con una recomendación más útil y menos genérica.</p>
+        </div>
+      </section>
+
+      <section class="booking" id="reservar">
+        <div class="booking-box reveal">
+          <div class="booking-copy">
+            <p class="kicker">Última llamada</p>
+            <h2>Hablemos y aterrizamos tu estadía</h2>
+            <p>Cuéntanos cuántas personas viajan, fechas tentativas y qué tipo de descanso tienes en mente. Te respondemos con una recomendación humana, clara y sin vueltas.</p>
+            <form class="booking-form" id="bookingForm">
+              <div class="field">
+                <label for="travelers">Personas</label>
+                <input id="travelers" name="travelers" placeholder="Ej. 8 personas">
+              </div>
+              <div class="field">
+                <label for="dates">Fechas tentativas</label>
+                <input id="dates" name="dates" placeholder="Ej. Junio 14 al 17">
+              </div>
+              <button class="button" type="submit">Enviar consulta</button>
+            </form>
+          </div>
+          <aside class="contact-panel" aria-label="Canales de contacto AETHERA">
+            <div>
+              <p class="kicker">Canales directos</p>
+              <h3>Reserva con acompañamiento real</h3>
+            </div>
+            <p>Elige el canal que prefieras. WhatsApp es el camino más rápido para revisar disponibilidad y resolver dudas puntuales.</p>
+            <a class="contact-card primary" href="https://wa.me/573217039846" target="_blank" rel="noreferrer">
+              <i class="contact-icon">W</i>
+              <b><span>WhatsApp reservas</span><strong>+57 321 703 9846</strong></b>
+              <em>→</em>
+            </a>
+            <a class="contact-card" href="mailto:aetherabysolvers@gmail.com">
+              <i class="contact-icon">@</i>
+              <b><span>Correo</span><strong>aetherabysolvers@gmail.com</strong></b>
+              <em>→</em>
+            </a>
+            <a class="contact-card" href="https://www.instagram.com/venecia.antioquia?igsh=NDVwYzBoaHo1d2Ny" target="_blank" rel="noreferrer">
+              <i class="contact-icon">IG</i>
+              <b><span>Instagram</span><strong>@venecia.antioquia</strong></b>
+              <em>→</em>
+            </a>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div><strong>AETHERA</strong><br>Colombia biodiversa · Cartografía del descanso</div>
+      <div class="footer-links">
+        <a href="mailto:aetherabysolvers@gmail.com">aetherabysolvers@gmail.com</a>
+        <a href="https://wa.me/573217039846" target="_blank" rel="noreferrer">+57 321 703 9846</a>
+        <a href="https://www.instagram.com/venecia.antioquia?igsh=NDVwYzBoaHo1d2Ny" target="_blank" rel="noreferrer">Instagram</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+
+    const properties = [
+      { title: "Villa del Viento", place: "San Bernardo del Viento, Córdoba", stop: 0 },
+      { title: "Casa Blanca", place: "Playa del Francés, Tolú", stop: 0 },
+      { title: "Zaguán de los Lagos", place: "Cauca Viejo, Antioquia", stop: 1 },
+      { title: "Villa Venecia", place: "Venecia, Antioquia", stop: 2 },
+      { title: "Refugio Malcriado", place: "Venecia, Antioquia", stop: 2 },
+      { title: "Quinta Esencia", place: "Venecia, Antioquia", stop: 2 }
+    ];
+
+    const lodgingData = {
+      "Villa del Viento": {
+        image: "aethera-assets/villa-del-viento-portada-clean.jpeg",
+        gallery: [
+          "aethera-assets/villa-del-viento-portada-clean.jpeg",
+          "aethera-assets/lodging/san-bernardo-2.jpg",
+          "aethera-assets/lodging/sab-bernardo.jpg",
+          "aethera-assets/lodging/san-bernardo-3.jpg"
+        ],
+        zone: "San Bernardo del Viento, Córdoba",
+        badge: "Caribe privado",
+        description: "Entre el mar y la tranquilidad del Caribe, este refugio está diseñado para desconectarse del ruido y reconectarse con lo esencial. Brisa marina, atardeceres dorados y un diseño que invita a la calma.",
+        facts: ["Mar Caribe", "Desconexión", "Privacidad"],
+        details: ["San Bernardo del Viento", "Casa privada", "Ritmo lento", "Ideal para descansar cerca al mar"],
+        experiences: ["Paseo en bote", "Atardecer en playa", "Snorkel", "Cocina de mar"],
+        advice: "Si buscas mar, calma y una llegada sin afán, esta casa es una primera parada natural para empezar el viaje."
+      },
+      "Casa Blanca": {
+        image: "aethera-assets/lodging/the-sea-isnt-202602081925.jpg",
+        gallery: [
+          "aethera-assets/lodging/the-sea-isnt-202602081925.jpg",
+          "aethera-assets/lodging/blanca-1.jpg",
+          "aethera-assets/lodging/blanca-3.jpg",
+          "aethera-assets/lodging/blanca-2.jpg",
+          "aethera-assets/lodging/blanca-4.jpg"
+        ],
+        zone: "Playa del Francés, Tolú",
+        badge: "Mar exclusivo",
+        description: "Un santuario de serenidad frente al mar Caribe. Arquitectura blanca que se funde con la arena, espacios abiertos y la brisa constante del golfo. El lugar perfecto para el descanso absoluto.",
+        facts: ["Playa del Francés", "Casa privada", "Frente al mar"],
+        details: ["Tolú", "Arquitectura blanca", "Espacios abiertos", "Ideal para mar con privacidad"],
+        experiences: ["Paseo en bote", "Snorkel", "Día de playa", "Cocina local"],
+        advice: "Ideal para quienes quieren mar con una sensación más exclusiva y una estadía que se sienta muy fotográfica."
+      },
+      "Zaguán de los Lagos": {
+        image: "aethera-assets/lodging/portada-cauca.jpg",
+        gallery: [
+          "aethera-assets/lodging/portada-cauca.jpg",
+          "aethera-assets/lodging/cauca-viejo.jpg",
+          "aethera-assets/lodging/cauca-3.jpg",
+          "aethera-assets/lodging/cauca-4.jpg",
+          "aethera-assets/lodging/cauca-2.jpg",
+          "aethera-assets/lodging/cauca-5.jpg"
+        ],
+        zone: "Cauca Viejo, Antioquia",
+        badge: "Grupos y piscina",
+        description: "Capacidad máxima para 16 personas. Cuenta con 4 habitaciones con baño privado y aire acondicionado, cocina equipada, piscina privada, zonas verdes y áreas sociales.",
+        facts: ["Hasta 16 personas", "4 habitaciones", "Piscina privada"],
+        details: ["Cauca Viejo", "Baños privados", "Aire acondicionado", "Cocina equipada", "Zonas verdes"],
+        experiences: ["Recorrido por Cauca Viejo", "Plan de piscina", "Encuentro familiar"],
+        advice: "Si vienes con grupo grande, esta llave resuelve la logística sin perder atmósfera ni comodidad."
+      },
+      "Villa Venecia": {
+        image: "aethera-assets/lodging/villa-venecia-027.jpg",
+        gallery: [
+          "aethera-assets/lodging/villa-venecia-027.jpg",
+          "aethera-assets/lodging/villa-venecia-040.jpg",
+          "aethera-assets/lodging/villa-venecia-053.jpg",
+          "aethera-assets/lodging/villa-venecia-068.jpg",
+          "aethera-assets/lodging/villa-venecia-098.jpg",
+          "aethera-assets/lodging/villa-venecia-118.jpg"
+        ],
+        zone: "Venecia, Antioquia",
+        badge: "Montaña social",
+        description: "Un oasis de arquitectura contemporánea anclado en las montañas antioqueñas. Espacios abiertos que dialogan con el paisaje cafetero, ofreciendo una piscina infinita hacia el horizonte y una privacidad absoluta.",
+        facts: ["Montaña", "Piscina infinita", "Privacidad"],
+        details: ["Venecia", "Paisaje cafetero", "Arquitectura contemporánea", "Espacios abiertos"],
+        experiences: ["Tour del café", "Cabalgata", "Cerro Tusa", "Chef privado", "Atardecer de montaña"],
+        advice: "Una buena elección para quienes buscan montaña, buen diseño y espacio para compartir el viaje con varias personas."
+      },
+      "Refugio Malcriado": {
+        image: "aethera-assets/lodging/photo-2025-09-16-12-57-54.jpg",
+        gallery: [
+          "aethera-assets/lodging/photo-2025-09-16-12-57-54.jpg",
+          "aethera-assets/lodging/photo-2025-09-16-12-57-52.jpg",
+          "aethera-assets/lodging/photo-2025-09-16-12-57-48.jpg",
+          "aethera-assets/lodging/photo-2025-09-16-12-57-49.jpg"
+        ],
+        zone: "Cerro Tusa, Venecia",
+        badge: "Refugio con vista",
+        description: "Un escondite rebelde y sofisticado en las faldas de Cerro Tusa. Diseño vanguardista que desafía lo convencional, con espacios creados para el disfrute hedonista y la contemplación absoluta del paisaje montañoso.",
+        facts: ["Cerro Tusa", "Vista", "Refugio íntimo"],
+        details: ["Venecia", "Paisaje montañoso", "Diseño vanguardista", "Contemplación y privacidad"],
+        experiences: ["Tour del café", "Cabalgata", "Cerro Tusa", "Chef privado", "Senderismo"],
+        advice: "Esta llave tiene más pausa y contemplación: perfecta para una escapada donde la montaña sea protagonista."
+      },
+      "Quinta Esencia": {
+        image: "aethera-assets/lodging/quinta-esencia-03.jpg",
+        gallery: [
+          "aethera-assets/lodging/quinta-esencia-03.jpg",
+          "aethera-assets/lodging/quinta-esencia-02.jpg",
+          "aethera-assets/lodging/quinta-esencia-01.jpg"
+        ],
+        zone: "Venecia, Antioquia",
+        badge: "Refugio para pareja",
+        description: "Un domo íntimo entre bambú, montaña y vista abierta hacia Cerro Tusa. Pensado para parejas que quieren despertar lento, desayunar con paisaje y cerrar el día en una atmósfera privada.",
+        facts: ["Ideal para pareja", "Vista a Cerro Tusa", "Domo privado", "Terraza de descanso"],
+        details: ["Venecia", "Domo privado", "Vista de montaña", "Desayuno con paisaje", "Plan romántico"],
+        experiences: ["Tour del café", "Tour de las abejas", "Cabalgata", "Tour de karts", "Atardecer de montaña"],
+        advice: "Perfecta para parejas que quieren privacidad, vista y una estadía íntima con experiencias cerca de Venecia."
+      }
+    };
+
+    const loader = document.querySelector("#loader");
+    const cursor = document.querySelector("#cursor");
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    window.addEventListener("load", () => {
+      setTimeout(() => loader.classList.add("hidden"), prefersReducedMotion ? 450 : 3150);
+    });
+
+    document.addEventListener("pointermove", (event) => {
+      document.documentElement.style.setProperty("--mx", `${event.clientX}px`);
+      document.documentElement.style.setProperty("--my", `${event.clientY}px`);
+      cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+    });
+
+    document.querySelectorAll("a, button, .tilt-card").forEach((item) => {
+      item.addEventListener("pointerenter", () => cursor.classList.add("active"));
+      item.addEventListener("pointerleave", () => cursor.classList.remove("active"));
+    });
+
+    document.querySelector("#propertyList").innerHTML = properties.map((item, index) => `
+      <button class="property-row reveal" type="button" data-stop="${item.stop}" data-property="${item.title}">
+        <span class="row-number">${String(index + 1).padStart(2, "0")}</span>
+        <span><h3>${item.title}</h3><p>${item.place}</p></span>
+        <span class="row-action"><small>Consultar</small></span>
+      </button>
+    `).join("");
+
+    document.querySelectorAll(".property-row").forEach((row) => {
+      row.addEventListener("click", () => {
+        document.querySelector("#quickProperty").value = row.dataset.property;
+        document.querySelector("#disponibilidad")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+
+    const lodgingOptions = [...document.querySelectorAll(".lodging-option")];
+    const lodgingImage = document.querySelector("#lodgingImage");
+    const lodgingBadge = document.querySelector("#lodgingBadge");
+    const lodgingGalleryCount = document.querySelector("#lodgingGalleryCount");
+    const lodgingPreviewGallery = document.querySelector("#lodgingPreviewGallery");
+    const lodgingZone = document.querySelector("#lodgingZone");
+    const lodgingTitle = document.querySelector("#lodgingTitle");
+    const lodgingDescription = document.querySelector("#lodgingDescription");
+    const lodgingFacts = document.querySelector("#lodgingFacts");
+    const lodgingAdvice = document.querySelector("#lodgingAdvice");
+    const lodgingConsult = document.querySelector("#lodgingConsult");
+    const lodgingDetailButton = document.querySelector("#lodgingDetailButton");
+    const bookingPanelTitle = document.querySelector("#bookingPanelTitle");
+    const bookingPanelPrice = document.querySelector("#bookingPanelPrice");
+    const bookingPanelZone = document.querySelector("#bookingPanelZone");
+    const conciergeConsult = document.querySelector("#conciergeConsult");
+    const conciergeDetail = document.querySelector("#conciergeDetail");
+    const lodgingDetail = document.querySelector("#lodgingDetail");
+    const detailClose = document.querySelector("#detailClose");
+    const detailMainFrame = document.querySelector(".detail-main-frame");
+    const detailImage = document.querySelector("#detailImage");
+    const detailThumbs = document.querySelector("#detailThumbs");
+    const detailLocation = document.querySelector("#detailLocation");
+    const detailTitle = document.querySelector("#detailTitle");
+    const detailPrice = document.querySelector("#detailPrice");
+    const detailDescription = document.querySelector("#detailDescription");
+    const detailFacts = document.querySelector("#detailFacts");
+    const detailExperiences = document.querySelector("#detailExperiences");
+    const detailConsult = document.querySelector("#detailConsult");
+    let activeLodging = "Villa del Viento";
+
+    function setPreviewImage(url, title) {
+      lodgingImage.src = url;
+      lodgingImage.alt = title;
+      [...lodgingPreviewGallery.querySelectorAll(".preview-thumb")].forEach((thumb) => {
+        thumb.classList.toggle("active", thumb.dataset.image === url);
+      });
+    }
+
+    function renderPreviewGallery(title, item) {
+      const gallery = item.gallery?.length ? item.gallery : [item.image];
+      lodgingGalleryCount.textContent = `${gallery.length} fotos`;
+      lodgingPreviewGallery.innerHTML = gallery.map((url, index) => `
+        <button class="preview-thumb${index === 0 ? " active" : ""}" type="button" data-image="${url}" aria-label="Ver foto ${index + 1} de ${title}">
+          <img src="${url}" alt="${title} foto ${index + 1}">
+        </button>
+      `).join("");
+      setPreviewImage(gallery[0], title);
+    }
+
+    function selectLodging(title) {
+      const item = lodgingData[title];
+      if (!item) return;
+      activeLodging = title;
+      lodgingOptions.forEach((option) => option.classList.toggle("active", option.dataset.lodging === title));
+      lodgingBadge.textContent = item.badge;
+      lodgingZone.textContent = item.zone;
+      lodgingTitle.textContent = title;
+      lodgingDescription.textContent = item.description;
+      lodgingFacts.innerHTML = item.facts.map((fact) => `<span>${fact}</span>`).join("");
+      lodgingAdvice.textContent = item.advice;
+      lodgingConsult.dataset.property = title;
+      lodgingDetailButton.dataset.property = title;
+      bookingPanelTitle.textContent = title;
+      bookingPanelPrice.textContent = "Disponibilidad personalizada";
+      bookingPanelZone.textContent = item.zone;
+      conciergeConsult.dataset.property = title;
+      conciergeDetail.dataset.property = title;
+      renderPreviewGallery(title, item);
+    }
+
+    function setDetailImage(url, title) {
+      const applyDetailOrientation = (width, height) => {
+        if (!width || !height) return;
+        const ratio = width / height;
+        const orientation = ratio < .86 ? "portrait" : ratio > 1.14 ? "landscape" : "square";
+        detailMainFrame.classList.remove("portrait", "landscape", "square");
+        detailMainFrame.classList.add(orientation);
+        detailMainFrame.style.setProperty("--detail-ratio", `${width} / ${height}`);
+      };
+
+      detailImage.src = url;
+      detailImage.alt = title;
+      const probe = new Image();
+      probe.onload = () => applyDetailOrientation(probe.naturalWidth, probe.naturalHeight);
+      probe.src = url;
+      if (probe.complete && probe.naturalWidth) applyDetailOrientation(probe.naturalWidth, probe.naturalHeight);
+      [...detailThumbs.querySelectorAll(".detail-thumb")].forEach((thumb) => {
+        thumb.classList.toggle("active", thumb.dataset.image === url);
+      });
+    }
+
+    function openLodgingDetail(title = activeLodging) {
+      const item = lodgingData[title];
+      if (!item) return;
+      selectLodging(title);
+      const gallery = item.gallery?.length ? item.gallery : [item.image];
+      detailLocation.textContent = item.zone;
+      detailTitle.textContent = title;
+      detailPrice.textContent = "Consulta disponibilidad";
+      detailDescription.textContent = item.description;
+      detailFacts.innerHTML = [...item.details, ...item.facts]
+        .map((fact) => `<span>${fact}</span>`)
+        .join("");
+      detailExperiences.innerHTML = item.experiences.map((experience) => `<span>${experience}</span>`).join("");
+      detailConsult.dataset.property = title;
+      detailThumbs.innerHTML = gallery.map((url, index) => `
+        <button class="detail-thumb${index === 0 ? " active" : ""}" type="button" data-image="${url}" aria-label="Ver imagen ${index + 1} de ${title}">
+          <img src="${url}" alt="${title} imagen ${index + 1}">
+        </button>
+      `).join("");
+      setDetailImage(gallery[0], title);
+      lodgingDetail.classList.add("open");
+      document.body.classList.add("detail-open");
+      lodgingDetail.setAttribute("aria-hidden", "false");
+      lodgingDetail.scrollTop = 0;
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeLodgingDetail() {
+      lodgingDetail.classList.remove("open");
+      document.body.classList.remove("detail-open");
+      lodgingDetail.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    lodgingOptions.forEach((button) => {
+      button.addEventListener("click", () => openLodgingDetail(button.dataset.lodging));
+    });
+
+    lodgingImage.closest(".preview-media").addEventListener("click", () => openLodgingDetail(activeLodging));
+    lodgingDetailButton.addEventListener("click", () => openLodgingDetail(lodgingDetailButton.dataset.property));
+
+    lodgingPreviewGallery.addEventListener("click", (event) => {
+      const thumb = event.target.closest(".preview-thumb");
+      if (!thumb) return;
+      setPreviewImage(thumb.dataset.image, activeLodging);
+    });
+
+    lodgingConsult.addEventListener("click", () => {
+      document.querySelector("#quickProperty").value = lodgingConsult.dataset.property;
+      document.querySelector("#disponibilidad")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    conciergeConsult.addEventListener("click", () => {
+      document.querySelector("#quickProperty").value = conciergeConsult.dataset.property;
+      document.querySelector("#disponibilidad")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    conciergeDetail.addEventListener("click", () => openLodgingDetail(conciergeDetail.dataset.property));
+
+    document.querySelectorAll(".funnel-option").forEach((button) => {
+      button.addEventListener("click", () => {
+        const property = button.dataset.funnelProperty;
+        selectLodging(property);
+        document.querySelector("#quickProperty").value = property;
+        document.querySelector("#galeria")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    detailThumbs.addEventListener("click", (event) => {
+      const thumb = event.target.closest(".detail-thumb");
+      if (!thumb) return;
+      setDetailImage(thumb.dataset.image, activeLodging);
+    });
+
+    detailClose.addEventListener("click", closeLodgingDetail);
+    lodgingDetail.addEventListener("click", (event) => {
+      if (event.target === lodgingDetail) closeLodgingDetail();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && lodgingDetail.classList.contains("open")) closeLodgingDetail();
+    });
+
+    detailConsult.addEventListener("click", () => {
+      document.querySelector("#quickProperty").value = detailConsult.dataset.property;
+      closeLodgingDetail();
+      document.querySelector("#disponibilidad")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    const terminalTabs = [...document.querySelectorAll(".terminal-tab")];
+    const destinationPanels = [...document.querySelectorAll(".destination-panel")];
+    const conciergeText = document.querySelector("#conciergeText");
+    const conversionSection = document.querySelector(".conversion-panel");
+    const conciergeCopy = [
+      "Si vienes por mar y desconexión, empieza por Villa del Viento. Si quieres algo más exclusivo en Tolú, mira Casa Blanca.",
+      "Para grupos y reuniones familiares, Zaguán de los Lagos es la parada más cómoda: amplia, privada y con piscina.",
+      "Si buscas montaña, café y una vista que cambie el ritmo, compara Villa Venecia con Refugio Malcriado. Si el viaje es en pareja, Quinta Esencia entra primero en la conversación."
+    ];
+
+    function syncDestination(index) {
+      activeStop = index;
+      terminalTabs.forEach((tab) => tab.classList.toggle("active", Number(tab.dataset.terminal) === index));
+      destinationPanels.forEach((panel) => panel.classList.toggle("active", Number(panel.dataset.panel) === index));
+      if (conciergeText) conciergeText.textContent = conciergeCopy[index] || conciergeCopy[0];
+      const activePanel = destinationPanels[index];
+      if (activePanel) {
+        destinationLabel.textContent = activePanel.dataset.destination || "Colombia";
+        flightCode.textContent = String(index + 1).padStart(2, "0");
+      }
+      flightPins.forEach((pin) => {
+        pin.classList.toggle("active", Number(pin.dataset.pin) === index);
+      });
+      document.querySelectorAll(".property-row").forEach((row) => {
+        row.classList.toggle("active", Number(row.dataset.stop) === index);
+      });
+    }
+
+    terminalTabs.forEach((tab) => {
+      tab.addEventListener("click", () => syncDestination(Number(tab.dataset.terminal)));
+    });
+
+    document.querySelectorAll(".terminal-options button").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelector("#quickProperty").value = button.dataset.property;
+        document.querySelector("#disponibilidad")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    });
+
+    document.querySelectorAll("[data-experience]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const experience = button.dataset.experience;
+        const message = `Hola AETHERA, quiero sumar esta actividad a mi estadía: ${experience}.`;
+        window.open(`https://wa.me/573217039846?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+      });
+    });
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) entry.target.classList.add("in");
+      });
+    }, { threshold: .14 });
+
+    document.querySelectorAll(".reveal").forEach((item) => revealObserver.observe(item));
+
+    if (conversionSection) {
+      const conversionFocusObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          document.body.classList.toggle("conversion-focus", entry.isIntersecting);
+        });
+      }, { threshold: .2 });
+      conversionFocusObserver.observe(conversionSection);
+    }
+
+    document.querySelectorAll(".tilt-card").forEach((card) => {
+      card.addEventListener("pointermove", (event) => {
+        const rect = card.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - .5;
+        const y = (event.clientY - rect.top) / rect.height - .5;
+        card.style.transform = `rotateY(${x * 8}deg) rotateX(${-y * 8}deg) translateY(-4px)`;
+      });
+      card.addEventListener("pointerleave", () => {
+        card.style.transform = "";
+      });
+    });
+
+    document.querySelector("#bookingForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const travelers = document.querySelector("#travelers").value.trim();
+      const dates = document.querySelector("#dates").value.trim();
+      const message = `Hola AETHERA, quiero planear una estadía.${travelers ? ` Somos ${travelers}.` : ""}${dates ? ` Fechas: ${dates}.` : ""}`;
+      window.open(`https://wa.me/573217039846?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    });
+
+    document.querySelector("#travelerProfileForm")?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const profile = {
+        nombre: document.querySelector("#profileName").value.trim(),
+        personas: document.querySelector("#profileGroup").value.trim(),
+        motivo: document.querySelector("#profilePurpose").value,
+        presupuesto: document.querySelector("#profileBudget").value,
+        zona: document.querySelector("#profileZone").value,
+        fechas: document.querySelector("#profileDates").value.trim(),
+        prioridades: document.querySelector("#profileMusts").value.trim()
+      };
+
+      const message = [
+        "Hola AETHERA, quiero que me ayuden a elegir una estadía.",
+        profile.nombre ? `Nombre: ${profile.nombre}` : "",
+        profile.personas ? `Personas: ${profile.personas}` : "",
+        profile.motivo ? `Motivo del viaje: ${profile.motivo}` : "",
+        profile.presupuesto ? `Presupuesto: ${profile.presupuesto}` : "",
+        profile.zona ? `Zona ideal: ${profile.zona}` : "",
+        profile.fechas ? `Fechas tentativas: ${profile.fechas}` : "",
+        profile.prioridades ? `Lo más importante: ${profile.prioridades}` : ""
+      ].filter(Boolean).join("\n");
+
+      window.open(`https://wa.me/573217039846?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    });
+
+    const today = new Date().toISOString().split("T")[0];
+    const checkin = document.querySelector("#checkin");
+    const checkout = document.querySelector("#checkout");
+    checkin.min = today;
+    checkout.min = today;
+
+    checkin.addEventListener("change", () => {
+      checkout.min = checkin.value || today;
+      if (checkout.value && checkout.value < checkout.min) checkout.value = checkout.min;
+    });
+
+    document.querySelector("#quickBookingForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const property = document.querySelector("#quickProperty").value;
+      const guests = document.querySelector("#quickGuests").value;
+      const message = `Hola AETHERA, quiero consultar disponibilidad para ${property}. Llegada: ${checkin.value}. Salida: ${checkout.value}. Personas: ${guests}.`;
+      window.open(`https://wa.me/573217039846?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    });
+
+    const travelPlane = document.querySelector("#travelPlane");
+    const routePath = document.querySelector("#routeProgress");
+    const destinationLabel = document.querySelector("#flightDestination");
+    const flightCode = document.querySelector("#flightCode");
+    const flightProgress = document.querySelector("#flightProgress");
+    const flightPins = [...document.querySelectorAll(".flight-pin")];
+    const sketchSection = document.querySelector("#bitacora");
+    const gallerySection = document.querySelector("#galeria");
+    const experiencesSection = document.querySelector(".experiences");
+    const bookingSection = document.querySelector("#reservar");
+    const experiencePin = document.querySelector(".experience-pin");
+    const experienceViewport = document.querySelector(".experience-viewport");
+    const experienceTrack = document.querySelector(".experience-track");
+    const sketchLines = [...document.querySelectorAll(".draw-line")];
+    const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+    let targetFlight = 0;
+    let currentFlight = 0;
+    let activeStop = 0;
+
+    sketchLines.forEach((line) => {
+      const length = line.getTotalLength();
+      line.dataset.length = length;
+      line.style.strokeDasharray = length;
+      line.style.strokeDashoffset = length;
+    });
+
+    function updateSketch() {
+      if (!sketchSection) return;
+      const rect = sketchSection.getBoundingClientRect();
+      const travel = rect.height - window.innerHeight * .28;
+      const progress = clamp((window.innerHeight - rect.top) / travel);
+      sketchSection.style.setProperty("--sketch-progress", `${Math.round(progress * 100)}%`);
+      sketchSection.style.setProperty("--sketch-alpha", progress > .42 ? ".95" : "0");
+
+      sketchLines.forEach((line) => {
+        const start = Number(line.dataset.start || 0);
+        const end = Number(line.dataset.end || 1);
+        const local = clamp((progress - start) / (end - start));
+        const length = Number(line.dataset.length || 0);
+        line.style.strokeDashoffset = length * (1 - local);
+      });
+    }
+
+    function updateExperienceScroll() {
+      if (!experiencesSection || !experiencePin || !experienceViewport || !experienceTrack) return;
+      if (window.matchMedia("(max-width: 760px)").matches) {
+        experiencesSection.style.removeProperty("--experience-scroll-height");
+        experienceTrack.style.setProperty("--experience-shift", "0px");
+        return;
+      }
+
+      const maxShift = Math.max(0, experienceTrack.scrollWidth - experienceViewport.clientWidth);
+      const pinHeight = experiencePin.offsetHeight || Math.max(window.innerHeight - 88, experiencePin.scrollHeight);
+      const scrollDistance = Math.max(window.innerHeight * 1.25, maxShift * 1.9);
+      const finalHold = Math.min(260, Math.max(150, window.innerHeight * .18));
+      experiencesSection.style.setProperty("--experience-scroll-height", `${pinHeight + scrollDistance + finalHold}px`);
+
+      const rect = experiencesSection.getBoundingClientRect();
+      const progress = clamp((88 - rect.top) / scrollDistance);
+      experienceTrack.style.setProperty("--experience-shift", `${-(maxShift * progress)}px`);
+    }
+
+    function updateFlightState() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      targetFlight = max > 0 ? clamp(window.scrollY / max) : 0;
+
+      const chapters = [...document.querySelectorAll(".chapter")];
+      let nextStop = activeStop;
+      chapters.forEach((chapter, index) => {
+        const rect = chapter.getBoundingClientRect();
+        if (rect.top < window.innerHeight * .58 && rect.bottom > window.innerHeight * .24) nextStop = index;
+      });
+      activeStop = nextStop;
+
+      const activeChapter = chapters[activeStop];
+      if (activeChapter) {
+        destinationLabel.textContent = activeChapter.dataset.destination || "Colombia";
+        flightCode.textContent = String(activeStop + 1).padStart(2, "0");
+      }
+
+      flightPins.forEach((pin) => {
+        pin.classList.toggle("active", Number(pin.dataset.pin) === activeStop);
+      });
+
+      document.querySelectorAll(".property-row").forEach((row) => {
+        row.classList.toggle("active", Number(row.dataset.stop) === activeStop);
+      });
+
+      if (conversionSection) {
+        const conversionRect = conversionSection.getBoundingClientRect();
+        document.body.classList.toggle("conversion-focus", conversionRect.top < window.innerHeight * .74 && conversionRect.bottom > window.innerHeight * .18);
+      }
+
+      if (gallerySection) {
+        const galleryRect = gallerySection.getBoundingClientRect();
+        document.body.classList.toggle("lodging-focus", galleryRect.top < window.innerHeight * .82 && galleryRect.bottom > window.innerHeight * .12);
+      }
+
+      if (experiencesSection) {
+        const experiencesRect = experiencesSection.getBoundingClientRect();
+        document.body.classList.toggle("experience-focus", experiencesRect.top < window.innerHeight * .78 && experiencesRect.bottom > window.innerHeight * .16);
+      }
+
+      if (bookingSection) {
+        const bookingRect = bookingSection.getBoundingClientRect();
+        document.body.classList.toggle("booking-focus", bookingRect.top < window.innerHeight * .78 && bookingRect.bottom > window.innerHeight * .12);
+      }
+
+      updateExperienceScroll();
+      updateSketch();
+    }
+
+    function placePlane(progress) {
+      if (!routePath || !travelPlane) return;
+      const length = routePath.getTotalLength();
+      const point = routePath.getPointAtLength(length * progress);
+      const next = routePath.getPointAtLength(length * clamp(progress + .008));
+      const x = (point.x / 1000) * window.innerWidth;
+      const y = (point.y / 1000) * window.innerHeight;
+      const nextX = (next.x / 1000) * window.innerWidth;
+      const nextY = (next.y / 1000) * window.innerHeight;
+      const angle = Math.atan2(nextY - y, nextX - x) * 180 / Math.PI;
+
+      travelPlane.style.setProperty("--plane-x", `${x}px`);
+      travelPlane.style.setProperty("--plane-y", `${y}px`);
+      travelPlane.style.setProperty("--plane-angle", `${angle}deg`);
+      routePath.style.setProperty("--route-offset", `${1 - progress}`);
+      flightProgress.style.setProperty("--flight-progress", `${Math.round(progress * 100)}%`);
+    }
+
+    function animateFlight() {
+      currentFlight += (targetFlight - currentFlight) * .08;
+      placePlane(currentFlight);
+      if (!prefersReducedMotion) requestAnimationFrame(animateFlight);
+    }
+
+    window.addEventListener("resize", updateFlightState);
+    window.addEventListener("scroll", updateFlightState, { passive: true });
+    syncDestination(0);
+    updateFlightState();
+    updateSketch();
+    selectLodging("Villa del Viento");
+    placePlane(0);
+    requestAnimationFrame(animateFlight);
+
+
+  </script>
+</body>
+</html>

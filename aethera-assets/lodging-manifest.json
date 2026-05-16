@@ -1,0 +1,515 @@
+{
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/Villa%20Venecia-098.jpg": {
+    "local": "aethera-assets/lodging/villa-venecia-098.jpg",
+    "original": [
+      4128,
+      6192
+    ],
+    "bbox": [
+      0,
+      0,
+      4128,
+      6192
+    ],
+    "clean": [
+      4128,
+      6192
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/Villa%20Venecia-027.jpg": {
+    "local": "aethera-assets/lodging/villa-venecia-027.jpg",
+    "original": [
+      3811,
+      5717
+    ],
+    "bbox": [
+      0,
+      0,
+      3811,
+      5717
+    ],
+    "clean": [
+      3811,
+      5717
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/portada%20cauca.jpeg": {
+    "local": "aethera-assets/lodging/portada-cauca.jpg",
+    "original": [
+      768,
+      1365
+    ],
+    "bbox": [
+      0,
+      164,
+      768,
+      1200
+    ],
+    "clean": [
+      768,
+      1036
+    ],
+    "cropped": true,
+    "area_ratio": 0.759
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/PHOTO-2025-09-16-12-57-54.jpg": {
+    "local": "aethera-assets/lodging/photo-2025-09-16-12-57-54.jpg",
+    "original": [
+      960,
+      1280
+    ],
+    "bbox": [
+      0,
+      0,
+      960,
+      1280
+    ],
+    "clean": [
+      960,
+      1280
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/san%20bernardo%202.jpeg": {
+    "local": "aethera-assets/lodging/san-bernardo-2.jpg",
+    "original": [
+      1365,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1365,
+      768
+    ],
+    "clean": [
+      1365,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/sab%20bernardo.jpeg": {
+    "local": "aethera-assets/lodging/sab-bernardo.jpg",
+    "original": [
+      1365,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1365,
+      768
+    ],
+    "clean": [
+      1365,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/san%20bernardo%203.jpeg": {
+    "local": "aethera-assets/lodging/san-bernardo-3.jpg",
+    "original": [
+      1365,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1365,
+      768
+    ],
+    "clean": [
+      1365,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/The_sea_isnt_202602081925.jpeg": {
+    "local": "aethera-assets/lodging/the-sea-isnt-202602081925.jpg",
+    "original": [
+      768,
+      1365
+    ],
+    "bbox": [
+      0,
+      63,
+      768,
+      1354
+    ],
+    "clean": [
+      768,
+      1291
+    ],
+    "cropped": true,
+    "area_ratio": 0.9458
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/blanca%201.jpeg": {
+    "local": "aethera-assets/lodging/blanca-1.jpg",
+    "original": [
+      1365,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1365,
+      768
+    ],
+    "clean": [
+      1365,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/blanca%203.jpeg": {
+    "local": "aethera-assets/lodging/blanca-3.jpg",
+    "original": [
+      1365,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1365,
+      768
+    ],
+    "clean": [
+      1365,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/blanca%202.jpeg": {
+    "local": "aethera-assets/lodging/blanca-2.jpg",
+    "original": [
+      1365,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1365,
+      768
+    ],
+    "clean": [
+      1365,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/blanca%204.jpeg": {
+    "local": "aethera-assets/lodging/blanca-4.jpg",
+    "original": [
+      1365,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1365,
+      768
+    ],
+    "clean": [
+      1365,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/cauca%20viejo.jpeg": {
+    "local": "aethera-assets/lodging/cauca-viejo.jpg",
+    "original": [
+      1376,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1376,
+      768
+    ],
+    "clean": [
+      1376,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/cauca%203.jpeg": {
+    "local": "aethera-assets/lodging/cauca-3.jpg",
+    "original": [
+      1365,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1365,
+      768
+    ],
+    "clean": [
+      1365,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/cauca%204.jpeg": {
+    "local": "aethera-assets/lodging/cauca-4.jpg",
+    "original": [
+      1365,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1365,
+      768
+    ],
+    "clean": [
+      1365,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/cauca%202.jpeg": {
+    "local": "aethera-assets/lodging/cauca-2.jpg",
+    "original": [
+      1365,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1365,
+      768
+    ],
+    "clean": [
+      1365,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/cauca%205.jpeg": {
+    "local": "aethera-assets/lodging/cauca-5.jpg",
+    "original": [
+      1365,
+      768
+    ],
+    "bbox": [
+      0,
+      0,
+      1365,
+      768
+    ],
+    "clean": [
+      1365,
+      768
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/Villa%20Venecia-040.jpg": {
+    "local": "aethera-assets/lodging/villa-venecia-040.jpg",
+    "original": [
+      4045,
+      5604
+    ],
+    "bbox": [
+      0,
+      0,
+      4045,
+      5604
+    ],
+    "clean": [
+      4045,
+      5604
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/Villa%20Venecia-053.jpg": {
+    "local": "aethera-assets/lodging/villa-venecia-053.jpg",
+    "original": [
+      4054,
+      5766
+    ],
+    "bbox": [
+      0,
+      0,
+      4054,
+      5766
+    ],
+    "clean": [
+      4054,
+      5766
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/Villa%20Venecia-068.jpg": {
+    "local": "aethera-assets/lodging/villa-venecia-068.jpg",
+    "original": [
+      3959,
+      5939
+    ],
+    "bbox": [
+      0,
+      0,
+      3959,
+      5939
+    ],
+    "clean": [
+      3959,
+      5939
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/Villa%20Venecia-118.jpg": {
+    "local": "aethera-assets/lodging/villa-venecia-118.jpg",
+    "original": [
+      3317,
+      4920
+    ],
+    "bbox": [
+      0,
+      0,
+      3317,
+      4920
+    ],
+    "clean": [
+      3317,
+      4920
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/PHOTO-2025-09-16-12-57-52.jpg": {
+    "local": "aethera-assets/lodging/photo-2025-09-16-12-57-52.jpg",
+    "original": [
+      960,
+      1280
+    ],
+    "bbox": [
+      0,
+      0,
+      960,
+      1280
+    ],
+    "clean": [
+      960,
+      1280
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/PHOTO-2025-09-16-12-57-48.jpg": {
+    "local": "aethera-assets/lodging/photo-2025-09-16-12-57-48.jpg",
+    "original": [
+      960,
+      1280
+    ],
+    "bbox": [
+      0,
+      0,
+      960,
+      1280
+    ],
+    "clean": [
+      960,
+      1280
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/PHOTO-2025-09-16-12-57-49.jpg": {
+    "local": "aethera-assets/lodging/photo-2025-09-16-12-57-49.jpg",
+    "original": [
+      960,
+      1280
+    ],
+    "bbox": [
+      0,
+      0,
+      960,
+      1280
+    ],
+    "clean": [
+      960,
+      1280
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/tour%20del%20cafe.jpeg": {
+    "local": "aethera-assets/lodging/tour-del-cafe.jpg",
+    "original": [
+      768,
+      1376
+    ],
+    "bbox": [
+      0,
+      0,
+      768,
+      1376
+    ],
+    "clean": [
+      768,
+      1376
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/cerro%20tusa.jpeg": {
+    "local": "aethera-assets/lodging/cerro-tusa.jpg",
+    "original": [
+      768,
+      1376
+    ],
+    "bbox": [
+      0,
+      0,
+      768,
+      1376
+    ],
+    "clean": [
+      768,
+      1376
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  },
+  "https://qlgjqvgjuscquhspjqdp.supabase.co/storage/v1/object/public/AETHERA-DOCS/cabalgata.jpeg": {
+    "local": "aethera-assets/lodging/cabalgata.jpg",
+    "original": [
+      768,
+      1376
+    ],
+    "bbox": [
+      0,
+      0,
+      768,
+      1376
+    ],
+    "clean": [
+      768,
+      1376
+    ],
+    "cropped": false,
+    "area_ratio": 1.0
+  }
+}
