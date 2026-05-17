@@ -32,9 +32,6 @@
     }
 
     html {
-      width: 100%;
-      max-width: 100%;
-      overflow-x: hidden;
       scroll-behavior: smooth;
       scroll-padding-top: 96px;
       background: var(--night);
@@ -46,8 +43,6 @@
 
     body {
       margin: 0;
-      width: 100%;
-      max-width: 100%;
       min-width: 320px;
       overflow-x: hidden;
       background:
@@ -2629,8 +2624,7 @@
     .experiences {
       height: var(--experience-scroll-height, 230svh);
       padding: 0 clamp(18px, 4vw, 58px);
-      overflow: hidden;
-      max-width: 100%;
+      overflow: clip;
       --experience-bg: #f5efe5;
       background:
         radial-gradient(720px circle at 12% 18%, rgba(47, 127, 145, .12), transparent 46%),
