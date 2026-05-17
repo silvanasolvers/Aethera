@@ -32,6 +32,9 @@
     }
 
     html {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
       scroll-behavior: smooth;
       scroll-padding-top: 96px;
       background: var(--night);
@@ -43,6 +46,8 @@
 
     body {
       margin: 0;
+      width: 100%;
+      max-width: 100%;
       min-width: 320px;
       overflow-x: hidden;
       background:
@@ -2624,7 +2629,8 @@
     .experiences {
       height: var(--experience-scroll-height, 230svh);
       padding: 0 clamp(18px, 4vw, 58px);
-      overflow: clip;
+      overflow: hidden;
+      max-width: 100%;
       --experience-bg: #f5efe5;
       background:
         radial-gradient(720px circle at 12% 18%, rgba(47, 127, 145, .12), transparent 46%),
@@ -2815,14 +2821,20 @@
       .experiences {
         padding-top: 0;
         padding-bottom: 0;
-        overflow: clip;
+        width: 100%;
+        max-width: 100vw;
+        overflow: hidden;
+        contain: layout paint;
       }
 
       .experience-pin {
         position: sticky;
         top: 78px;
         height: auto;
+        width: 100%;
+        max-width: 100%;
         min-height: 0;
+        overflow: hidden;
         padding: 10px 0 12px;
         justify-content: flex-start;
       }
@@ -2843,8 +2855,12 @@
       }
 
       .experience-viewport {
+        width: calc(100vw - 0px);
+        max-width: 100vw;
         overflow: hidden;
         overscroll-behavior-inline: contain;
+        touch-action: pan-y;
+        contain: paint;
         margin-inline: -18px;
         padding-inline: 18px;
       }
@@ -5363,6 +5379,12 @@
       experienceTrack.style.setProperty("--experience-shift", `${-(maxShift * progress)}px`);
     }
 
+    function lockPageInlineScroll() {
+      document.documentElement.scrollLeft = 0;
+      document.body.scrollLeft = 0;
+      if (window.scrollX !== 0) window.scrollTo(0, window.scrollY);
+    }
+
     function updateFlightState() {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       targetFlight = max > 0 ? clamp(window.scrollY / max) : 0;
@@ -5439,6 +5461,7 @@
 
     window.addEventListener("resize", updateFlightState);
     window.addEventListener("scroll", updateFlightState, { passive: true });
+    window.addEventListener("scroll", lockPageInlineScroll, { passive: true });
     syncDestination(0);
     updateFlightState();
     updateSketch();
