@@ -3315,6 +3315,34 @@
       font-weight: 400;
     }
 
+    .footer-brand {
+      display: grid;
+      gap: 7px;
+    }
+
+    .footer-powered {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(248, 242, 231, .38);
+      font-size: 11px;
+      font-weight: 760;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .footer-powered a {
+      color: rgba(248, 242, 231, .58);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(248, 242, 231, .22);
+      transition: color .2s ease, border-color .2s ease;
+    }
+
+    .footer-powered a:hover {
+      color: var(--paper);
+      border-bottom-color: rgba(248, 242, 231, .75);
+    }
+
     .footer-links {
       display: flex;
       gap: 16px;
@@ -4890,7 +4918,10 @@
     </main>
 
     <footer>
-      <div><strong>AETHERA</strong><br>Colombia biodiversa · Cartografía del descanso</div>
+      <div class="footer-brand">
+        <div><strong>AETHERA</strong><br>Colombia biodiversa · Cartografía del descanso</div>
+        <span class="footer-powered">AETHERA is powered by <a href="https://solversai.com" target="_blank" rel="noreferrer">SolversAI</a></span>
+      </div>
       <div class="footer-links">
         <a href="mailto:aetherabysolvers@gmail.com">aetherabysolvers@gmail.com</a>
         <a href="https://wa.me/573217039846" target="_blank" rel="noreferrer">+57 321 703 9846</a>
